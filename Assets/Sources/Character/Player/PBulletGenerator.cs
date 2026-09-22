@@ -19,8 +19,13 @@ public class PBulletGenerator : MonoBehaviour {
         //キーボードの状態取得
         Keyboard keyboard = Keyboard.current;
 
+        //キーボードが接続されていない場合、何もしない
+        if(keyboard == null) {
+            return;
+        }
+
         //スペースキーで弾発射
-        if(keyboard.spaceKey.isPressed) {
+        if(keyboard.spaceKey.wasPressedThisFrame) {
 
             //GameDirectorと連携
             GameObject gameDirectorObj = GameObject.Find("GameDirector");
@@ -55,8 +60,9 @@ public class PBulletGenerator : MonoBehaviour {
                 pBullet.GetComponent<PBulletController>().PBulletShoot(playerPos);
 
                 //弾を発射したことをDirectorに伝え、撃破数を初期化する
+                //仕様変更 連射可能にしたので、撃破数初期化は画面から全ての弾が消えたタイミングで行う
                 gameDirectorObj.GetComponent<GameDirector>().PBulletNumMinus();
-                gameDirectorObj.GetComponent<GameDirector>().EnemyDestroyNumReset();
+                //gameDirectorObj.GetComponent<GameDirector>().EnemyDestroyNumReset();
 
             }
 

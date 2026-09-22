@@ -6,7 +6,7 @@ using UnityEngine;
 public class EnemyT1Controller : MonoBehaviour {
 
     //点数
-    private const int enemyScore = 10;
+    private const int ENEMY_SCORE = 10;
 
     //敵弾発射の間隔
     private const float SHOOT_INTERVAL = 2.0f;
@@ -117,7 +117,7 @@ public class EnemyT1Controller : MonoBehaviour {
 
             //倒されたこと、加算する点数をDirectorに伝える
             gameDirectorObj.GetComponent<GameDirector>().EnemyDestroyNumPlus();
-            gameDirectorObj.GetComponent<GameDirector>().ScorePlus(enemyScore);
+            gameDirectorObj.GetComponent<GameDirector>().ScorePlus(ENEMY_SCORE);
 
             //自分自身を消す
             Destroy(this.gameObject);

@@ -32,6 +32,11 @@ public class PlayerController : MonoBehaviour {
         //キーボードの状態取得
         Keyboard keyboard = Keyboard.current;
 
+        //キーボードが接続されていない場合、何もしない
+        if(keyboard == null) {
+            return;
+        }
+
         //左右移動
         if(keyboard.leftArrowKey.isPressed && transform.position.x > WINDOW_LIMIT_LEFT) {
             keyLfRi = -1;

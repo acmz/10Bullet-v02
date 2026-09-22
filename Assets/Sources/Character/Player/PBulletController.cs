@@ -27,14 +27,14 @@ public class PBulletController : MonoBehaviour {
 	void Update () {
 
         //画面外に出たら自分自身を破棄する
-        //画面外に出たら自分自身を破棄する
         if(this.gameObject.transform.position.x < P_BULLET_DESTROY_POS_LEFT
             || this.gameObject.transform.position.x > P_BULLET_DESTROY_POS_RIGHT
             || this.gameObject.transform.position.y > P_BULLET_DESTROY_POS_UP
             || this.gameObject.transform.position.y < P_BULLET_DESTROY_POS_DOWN) {
-            Destroy(gameObject);
+            Destroy(this.gameObject);
         }
-	}
+
+    }
 
     //自弾の発射
     public void PBulletShoot(Vector2 inVector2) {
@@ -45,13 +45,13 @@ public class PBulletController : MonoBehaviour {
         Vector2 shootPos = endPos - startPos;
 
         //自弾Rigidbody取得
-        pBulletBody = GetComponent<Rigidbody2D>();
+        this.pBulletBody = this.GetComponent<Rigidbody2D>();
 
         //自弾の発射角度（敵弾の発射方向.normalized）とスピードを設定
-        pBulletBody.linearVelocity = shootPos.normalized * P_BULLET_MOVE_SPEED;
+        this.pBulletBody.linearVelocity = shootPos.normalized * P_BULLET_MOVE_SPEED;
 
         //自弾に力を加え、発射
-        pBulletBody.AddForce(shootPos.normalized);
+        this.pBulletBody.AddForce(shootPos.normalized);
 
     }
 

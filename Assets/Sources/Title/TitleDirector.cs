@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 public class TitleDirector : MonoBehaviour
@@ -15,8 +16,16 @@ public class TitleDirector : MonoBehaviour
     void Update()
     {
 
+        //キーボードの状態取得
+        Keyboard keyboard = Keyboard.current;
+
+        //キーボードが接続されていない場合、何もしない
+        if(keyboard == null) {
+            return;
+        }
+
         //スペースキー押下でゲームスタート
-        if (Input.GetKeyDown(KeyCode.Space)) {
+        if(keyboard.spaceKey.wasPressedThisFrame) {
             SceneManager.LoadScene("GameScene");
         }
 
