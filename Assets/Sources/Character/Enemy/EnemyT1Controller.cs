@@ -31,17 +31,23 @@ public class EnemyT1Controller : MonoBehaviour {
 
     //敵表示限界
     private const float ENEMY_DESTROY_POS_LEFT = -10.0f;
-    private const float ENEMY_DESTROY_POS_RIGHT = 10.0f;
+    private const float ENEMY_DESTROY_POS_RIGHT = 30.0f;
     private const float ENEMY_DESTROY_POS_UP = 6.0f;
     private const float ENEMY_DESTROY_POS_DOWN = -6.0f;
 
+    //敵弾生成オブジェクト
+    GameObject eBulletObj;
+
     // Use this for initialization
     void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
+
+        //敵弾生成オブジェクト取得
+        this.eBulletObj = GameObject.Find("E_Bullet_Generator");
+
+    }
+
+    // Update is called once per frame
+    void Update () {
 
         //敵弾発射
         this.shootTime += Time.deltaTime;
@@ -49,8 +55,7 @@ public class EnemyT1Controller : MonoBehaviour {
 
             //敵の位置を基に、敵弾を発射
             Vector2 enemyPos = this.gameObject.transform.position;
-            GameObject eBulletObj = GameObject.Find("E_Bullet_Generator");
-            eBulletObj.GetComponent<EBulletGenerator>().EBulletGenerate(
+            this.eBulletObj.GetComponent<EBulletGenerator>().EBulletGenerate(
                 enemyPos
                 ,ENEMY_LEVEL
                 ,EBulletGenerator.EBulletType.straight);

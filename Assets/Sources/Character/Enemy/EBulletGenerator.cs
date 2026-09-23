@@ -11,6 +11,7 @@ public class EBulletGenerator : MonoBehaviour
     //弾の色
     private Color E_BULLET_STRIGHT_COLOR = new Color(1.0f, 1.0f, 0.5f, 1.0f);
     private Color E_BULLET_HOMING_COLOR = new Color(1.0f, 0.5f, 0.5f, 1.0f);
+    private Color E_BULLET_FAN_COLOR = new Color(1.0f, 0.7f, 0.4f, 1.0f);
 
     //レベル上昇のボーダーライン
     public enum EnemyLevel:int {
@@ -21,8 +22,11 @@ public class EBulletGenerator : MonoBehaviour
 
     //敵弾の種類
     public enum EBulletType {
-        straight, homing
+        straight, homing, fan
     }
+
+    //扇状弾の開き角度（度）。画面左方向（自機側）を中心に左右均等へ広げる
+    private float SPREAD_ANGLE = 45.0f;
 
     // Start is called before the first frame update
     void Start()
@@ -56,6 +60,11 @@ public class EBulletGenerator : MonoBehaviour
             case EBulletType.homing:
                 //ホーミング弾
                 this.EBulletHoming(eBulletVector2, inEnemyLevel);
+                break;
+
+            case EBulletType.fan:
+                //扇弾
+                this.EBulletFan(eBulletVector2, inEnemyLevel);
                 break;
 
         }
@@ -118,6 +127,49 @@ public class EBulletGenerator : MonoBehaviour
             inBulletPos,
             playerPos,
             (EBulletController.EBulletSpeed)eBulletSpeed);
+
+    }
+
+    //扇状弾を生成する
+    public void EBulletFan(Vector2 inBulletPos, int inEnemyLevel) {
+
+        //扇の中心となる基準角度（180度＝Unityの角度系でX軸負方向＝画面左＝自機側）
+        const float baseAngle = 180.0f;
+
+        //敵レベルを基に、扇状弾の球数を決める
+        int enemyLevelBorder = (int)EnemyLevel.lv2;
+        int bulletCount = 3;
+        if(inEnemyLevel >= enemyLevelBorder) {
+            //敵レベルが上がっていたら球数を増やす
+            bulletCount = 5;
+        } 
+
+        //弾と弾の間の角度間隔を計算する（弾が1発のときは0除算を避けるため0にする）
+        float angleStep = (bulletCount > 1) ? SPREAD_ANGLE / (bulletCount - 1) : 0f;
+
+        //扇の一番端（開始角度）を、基準角度から開き角度の半分を引いて求める
+        float startAngle = baseAngle - (SPREAD_ANGLE / 2.0f);
+
+        //指定された弾数の分だけループし、1発ずつ生成する
+        for(int i = 0;i < bulletCount;i++) {
+
+            //Debug.Log("T3 Shoot");
+
+            //この弾の角度を「開始角度＋（角度間隔×インデックス）」で求める
+            float angle = startAngle + (angleStep * i);
+
+            //度数法の角度をラジアンに変換する（Mathf.Cos/Sinはラジアンを使うため）
+            float radian = angle * Mathf.Deg2Rad;
+
+            //角度から発射方向ベクトル（X, Y）を計算する
+            Vector2 direction = new Vector2(Mathf.Cos(radian), Mathf.Sin(radian));
+
+            //扇状弾のプレハブを、敵の座標・回転なしで生成する
+            GameObject eFanBullet = Instantiate(eBulletPrefab, inBulletPos, Quaternion.identity) as GameObject;
+            eFanBullet.GetComponent<Renderer>().material.color = E_BULLET_FAN_COLOR;
+            eFanBullet.GetComponent<EBulletController>().EBulletShoot(direction);
+
+        }
 
     }
 

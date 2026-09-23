@@ -127,4 +127,17 @@ public class EBulletController : MonoBehaviour
     }
 
 
+    //扇状弾の発射
+    public void EBulletShoot(Vector2 inDirection) {
+
+        //敵弾Rigidbody取得
+        this.eBulletBody = this.GetComponent<Rigidbody2D>();
+
+        //発射方向ベクトルを正規化（長さ1に）し、速度を掛けてRigidbody2Dの速度として設定する
+        this.eBulletBody.linearVelocity = inDirection.normalized * E_BULLET_MOVE_SPEED;
+
+        //発射方向へ力を加え、物理的に弾を押し出す
+        this.eBulletBody.AddForce(inDirection.normalized);
+
+    }
 }

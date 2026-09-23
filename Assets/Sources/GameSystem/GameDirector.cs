@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -59,8 +60,18 @@ public class GameDirector : MonoBehaviour {
     //コルーチン（処理停止）制御フラグ
     private bool isSleeping = false;
 
+    //ゲームオーバー
+    private GameObject gameOverUI;
+
+    //ゲームオーバーコントロールフラグ
+    private bool isGameOver = false;
+
     // Use this for initialization
     void Start () {
+
+        //ゲームオーバー非表示
+        this.gameOverUI = GameObject.Find("GameOver");
+        this.gameOverUI.SetActive(false);
 
         //残弾数UI取得、初期化
         this.pBulletNum = GameObject.Find("P_Bullet_Num");
@@ -85,23 +96,37 @@ public class GameDirector : MonoBehaviour {
     // Update is called once per frame
     void Update () {
 
-        if (this.isWaveInit) {
+        //ゲームオーバー中なら何もしない
+        if(this.isGameOver) {
+            return;
+        }
 
-            //Wave開始前
-            //残弾数と残り時間のリセット、Wave数の設定
+        //自機が消えたらゲームオーバー
+        if(GameObject.Find("Player") == null) {
+
+            //Debug.Log("Game Over");
+            this.gameOverUI.SetActive(true);
+            this.isGameOver = true;
+            return;
+        
+        }
+
+        //Wave開始前
+        //残弾数と残り時間のリセット、Wave数の設定
+        if(this.isWaveInit) {
+
             StartCoroutine("InitPlayerStatus", 0.5f);
+            return;
 
-        } else {
+        }
 
-            //Wave開始後
-            //残り時間を減らす
-            this.TimeLeftMinus();
+        //Wave開始後
+        //残り時間を減らす
+        this.TimeLeftMinus();
 
-            //残り時間が0になったら、次のWaveへ。
-            if (this.timeLeft <= 0f) {
-                this.isWaveInit = true;
-            }
-
+        //残り時間が0になったら、次のWaveへ。
+        if (this.timeLeft <= 0f) {
+            this.isWaveInit = true;
         }
 
     }
