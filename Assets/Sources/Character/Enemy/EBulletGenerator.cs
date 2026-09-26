@@ -22,7 +22,10 @@ public class EBulletGenerator : MonoBehaviour
 
     //敵弾の種類
     public enum EBulletType {
-        straight, homing, fan
+        straight, 
+        homing, 
+        fan,
+        random
     }
 
     //扇状弾の開き角度（度）。画面左方向（自機側）を中心に左右均等へ広げる
@@ -64,6 +67,11 @@ public class EBulletGenerator : MonoBehaviour
 
             case EBulletType.fan:
                 //扇弾
+                this.EBulletFan(eBulletVector2, inEnemyLevel);
+                break;
+
+            case EBulletType.random:
+                //ランダム弾
                 this.EBulletFan(eBulletVector2, inEnemyLevel);
                 break;
 
@@ -169,6 +177,33 @@ public class EBulletGenerator : MonoBehaviour
             eFanBullet.GetComponent<Renderer>().material.color = E_BULLET_FAN_COLOR;
             eFanBullet.GetComponent<EBulletController>().EBulletShoot(direction);
 
+        }
+
+    }
+
+    //ランダム弾を生成する
+    public void EBulletRandom(Vector2 inBulletPos, int inEnemyLevel) {
+
+        //発射位置は敵の現在位置とする
+        Vector2 shootPos = this.gameObject.transform.position;
+
+        //0～360度の範囲でランダムな角度（度数法）を決定する
+        float randomAngleDeg = UnityEngine.Random.Range(0f, 360f);
+
+        //度数法の角度をラジアンに変換する（Mathf.Cos/Sinはラジアンを使うため）
+        float randomAngleRad = randomAngleDeg * Mathf.Deg2Rad;
+
+        //ランダムな角度から発射方向ベクトル（X, Y）を求める
+        Vector2 randomDirection = new Vector2(Mathf.Cos(randomAngleRad), Mathf.Sin(randomAngleRad));
+
+        //敵弾のプレハブを、発射位置・回転なしで生成する
+        GameObject eBullet = Instantiate(this.eBulletPrefab, shootPos, Quaternion.identity);
+
+        //EBulletController.cs に既にある「任意方向へ発射する」メソッド（扇状弾用に用意されたもの）を
+        //そのまま再利用し、ランダムな方向へ弾を撃ち出す。EBulletController.cs 自体は変更していない。
+        EBulletController eBulletController = eBullet.GetComponent<EBulletController>();
+        if(eBulletController != null) {
+            eBulletController.EBulletShoot(randomDirection);
         }
 
     }

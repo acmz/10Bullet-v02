@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using unityroom.Api;
 
 public class GameDirector : MonoBehaviour {
 
@@ -21,7 +22,7 @@ public class GameDirector : MonoBehaviour {
 
     //スコア表示
     private GameObject scoreNum;
-    private int score = 0;
+    private float score = 0f;
     private const string SCORE_MSG = "Score ";
     private const string SCORE_FORMAT = "{0:#,0}";
 
@@ -66,6 +67,10 @@ public class GameDirector : MonoBehaviour {
     //ゲームオーバーコントロールフラグ
     private bool isGameOver = false;
 
+    //ゲームオーバー表示時間
+    //private const float GAMEOVER_WAIT_TIME = 5.0f;
+    //private float gameOverWaitTime = 0f;
+
     // Use this for initialization
     void Start () {
 
@@ -106,6 +111,10 @@ public class GameDirector : MonoBehaviour {
 
             //Debug.Log("Game Over");
             this.gameOverUI.SetActive(true);
+
+            //スコア表示
+            UnityroomApiClient.Instance.SendScore(1, this.score, ScoreboardWriteMode.HighScoreDesc);
+
             this.isGameOver = true;
             return;
         
@@ -125,7 +134,7 @@ public class GameDirector : MonoBehaviour {
         this.TimeLeftMinus();
 
         //残り時間が0になったら、次のWaveへ。
-        if (this.timeLeft <= 0f) {
+        if(this.timeLeft <= 0f) {
             this.isWaveInit = true;
         }
 
@@ -211,7 +220,7 @@ public class GameDirector : MonoBehaviour {
     public void ScoreReset() {
 
         //スコア初期化
-        this.score = 0;
+        this.score = 0f;
 
         //表示更新
         this.ScoreView(this.score);
@@ -219,7 +228,7 @@ public class GameDirector : MonoBehaviour {
     }
 
     //スコア加算
-    public void ScorePlus(int inScore) {
+    public void ScorePlus(float inScore) {
 
         //スコア加算
         this.score += inScore * this.enemyDestroyNum;
@@ -230,7 +239,7 @@ public class GameDirector : MonoBehaviour {
     }
 
     //スコア表示
-    private void ScoreView(int inViewScore) {
+    private void ScoreView(float inViewScore) {
 
         //スコア表示を更新(3桁カンマ区切り)
         this.scoreNum.GetComponent<Text>().text = SCORE_MSG + string.Format(SCORE_FORMAT, inViewScore);
