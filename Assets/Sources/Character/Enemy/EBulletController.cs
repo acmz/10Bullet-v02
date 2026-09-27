@@ -23,8 +23,13 @@ public class EBulletController : MonoBehaviour
     private const float E_BULLET_DESTROY_POS_UP = 6.0f;
     private const float E_BULLET_DESTROY_POS_DOWN = -6.0f;
 
-    //敵弾の発射方向
-    public enum EBulletDirection {
+    //敵弾の発射方向(x軸)
+    public enum EBulletDirectionX {
+        left, right
+    }
+
+    //敵弾の発射方向(y軸)
+    public enum EBulletDirectionY {
         left, up, down
     }
 
@@ -56,27 +61,35 @@ public class EBulletController : MonoBehaviour
     }
 
     //敵弾の発射（直進）
-    public void EBulletShoot(Vector2 inBulletPos, EBulletDirection inDirection) {
+    public void EBulletShoot(Vector2 inBulletPos,
+                             EBulletDirectionX inDirectionX,
+                             EBulletDirectionY inDirectionY) {
 
         //敵弾の発射方向を求める
         Vector2 startPos = inBulletPos;
         Vector2 endPos = inBulletPos;
         Vector2 shootPos;
 
-        endPos.x -= E_BULLET_MOVE_ANGLE_X;
-        switch (inDirection) {
+        if(inDirectionX == EBulletDirectionX.left) {
+            //右から左へ飛ばす
+            endPos.x -= E_BULLET_MOVE_ANGLE_X;
+        } else {
+            //左から右へ飛ばす
+            endPos.x += E_BULLET_MOVE_ANGLE_X;
+        }
+        switch (inDirectionY) {
 
-            case EBulletDirection.left:
+            case EBulletDirectionY.left:
                 //正面
                 //角度調整不要
                 break;
 
-            case EBulletDirection.up:
+            case EBulletDirectionY.up:
                 //斜め上
                 endPos.y += E_BULLET_MOVE_ANGLE_Y; 
                 break;
 
-            case EBulletDirection.down:
+            case EBulletDirectionY.down:
                 //斜め下
                 endPos.y -= E_BULLET_MOVE_ANGLE_Y;
                 break;

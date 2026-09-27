@@ -43,6 +43,8 @@ public class EnemyDirector : MonoBehaviour {
       , T2 = 2
       , T3 = 3
       , T4 = 4
+      , T5 = 5
+      , T6 = 6
     }
 
     //敵タイプ別生成オブジェクト
@@ -50,6 +52,8 @@ public class EnemyDirector : MonoBehaviour {
     private GameObject enemyT2GeneratorObj;
     private GameObject enemyT3GeneratorObj;
     private GameObject enemyT4GeneratorObj;
+    private GameObject enemyT5GeneratorObj;
+    private GameObject enemyT6GeneratorObj;
 
     // Start is called before the first frame update
     void Start()
@@ -67,6 +71,8 @@ public class EnemyDirector : MonoBehaviour {
         this.enemyT2GeneratorObj = GameObject.Find("Enemy_T2_Generator");
         this.enemyT3GeneratorObj = GameObject.Find("Enemy_T3_Generator");
         this.enemyT4GeneratorObj = GameObject.Find("Enemy_T4_Generator");
+        this.enemyT5GeneratorObj = GameObject.Find("Enemy_T5_Generator");
+        this.enemyT6GeneratorObj = GameObject.Find("Enemy_T6_Generator");
 
         //GameDirectorオブジェクトを取得する。
         this.gameDirectorObj = GameObject.Find("GameDirector");
@@ -216,6 +222,14 @@ public class EnemyDirector : MonoBehaviour {
 
             case (int)EnemyType.T4:
                 this.enemyT4GeneratorObj.GetComponent<EnemyT4Generator>().GenerateEnemy(inXPos, inYPos);
+                break;
+
+            case (int)EnemyType.T5:
+                this.enemyT5GeneratorObj.GetComponent<EnemyT5Generator>().GenerateEnemy(inXPos, inYPos);
+                break;
+
+            case (int)EnemyType.T6:
+                this.enemyT6GeneratorObj.GetComponent<EnemyT6Generator>().GenerateEnemy(inXPos, inYPos);
                 break;
 
         }

@@ -3,17 +3,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyT1Controller : MonoBehaviour {
+public class EnemyT5Controller : MonoBehaviour {
 
     //点数
     private const int ENEMY_SCORE = 10;
 
     //敵弾発射の間隔
-    private const float SHOOT_INTERVAL = 2.0f;
+    private const float SHOOT_INTERVAL = 0.5f;
     private float shootTime;
 
+    //弾発射済み判定フラグ
+    private bool shooted = false;
+
     //敵のレベル設定
-    private const int ENEMY_LEVEL = 5;
+    private const int ENEMY_LEVEL = 1;
 
     //生成から移動開始するまでの間隔
     private const float MOVE_INTERVAL = 0.0f;
@@ -23,20 +26,20 @@ public class EnemyT1Controller : MonoBehaviour {
     private const float ENEMY_MOVE_SPEED = 3.0f;
 
     //敵の移動方向
-    private const float ENEMY_MOVE_ANGLE_X = 1.0f;
+    private const float ENEMY_MOVE_ANGLE_X = -1.0f;
     //private const float ENEMY_MOVE_ANGLE_Y = 0.5f;
 
     //敵移動済み判定フラグ
     private bool enemyMoveEnabled = true;
 
     //敵表示限界
-    private const float ENEMY_DESTROY_POS_LEFT = -10.0f;
-    private const float ENEMY_DESTROY_POS_RIGHT = 30.0f;
+    private const float ENEMY_DESTROY_POS_LEFT = -30.0f;
+    private const float ENEMY_DESTROY_POS_RIGHT = 10.0f;
     private const float ENEMY_DESTROY_POS_UP = 6.0f;
     private const float ENEMY_DESTROY_POS_DOWN = -6.0f;
 
     //敵弾生成オブジェクト
-    GameObject eBulletObj;
+    private GameObject eBulletObj;
 
     // Use this for initialization
     void Start () {
@@ -51,17 +54,20 @@ public class EnemyT1Controller : MonoBehaviour {
 
         //敵弾発射
         this.shootTime += Time.deltaTime;
-        if(this.shootTime >= SHOOT_INTERVAL) {
+        if(this.shootTime >= SHOOT_INTERVAL && !this.shooted) {
 
             //敵の位置を基に、敵弾を発射
             Vector2 enemyPos = this.gameObject.transform.position;
             this.eBulletObj.GetComponent<EBulletGenerator>().EBulletGenerate(
                 enemyPos
                 ,ENEMY_LEVEL
-                ,EBulletGenerator.EBulletType.straight);
+                ,EBulletGenerator.EBulletType.straightOpposite);
 
             //発射間隔をリセット
-            this.shootTime = 0f;
+            //this.shootTime = 0f;
+
+            //弾発射済み
+            this.shooted = true;
 
         }
 

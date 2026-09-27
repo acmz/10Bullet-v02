@@ -37,7 +37,7 @@ public class EnemyT3Controller : MonoBehaviour {
     private const float ENEMY_MOVE_ANGLE_X = 1.0f;
 
     //進入移動を開始済みかどうかのフラグ（trueになったら再度速度設定処理を行わない）
-    private Boolean enemyMoveEnabled = false;
+    private bool enemyMoveEnabled = false;
 
     //生成されてから停止（スウェイ移行）するまでの時間（秒）
     private const float MOVE_TIME = 1.5f;

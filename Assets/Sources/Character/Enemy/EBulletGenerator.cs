@@ -25,7 +25,8 @@ public class EBulletGenerator : MonoBehaviour
         straight, 
         homing, 
         fan,
-        random
+        random,
+        straightOpposite
     }
 
     //扇状弾の開き角度（度）。画面左方向（自機側）を中心に左右均等へ広げる
@@ -44,10 +45,9 @@ public class EBulletGenerator : MonoBehaviour
     }
 
     //敵弾生成
-    public void EBulletGenerate(
-        Vector2 inEnemyPos
-        , int inEnemyLevel
-        , EBulletType inEBulletType) {
+    public void EBulletGenerate(Vector2 inEnemyPos,
+                                int inEnemyLevel,
+                                EBulletType inEBulletType) {
 
         //敵の位置（inEnemyPos）を基に、敵弾の発射位置を設定
         Vector2 eBulletVector2 = new Vector2(inEnemyPos.x + E_BULLET_POS_SET, inEnemyPos.y);
@@ -75,6 +75,11 @@ public class EBulletGenerator : MonoBehaviour
                 this.EBulletFan(eBulletVector2, inEnemyLevel);
                 break;
 
+            case EBulletType.straightOpposite:
+                //直進弾 逆方向
+                this.EBulletStraightOpposite(eBulletVector2, inEnemyLevel);
+                break;
+
         }
 
     }
@@ -87,7 +92,8 @@ public class EBulletGenerator : MonoBehaviour
         eBullet1.GetComponent<Renderer>().material.color = E_BULLET_STRIGHT_COLOR;
         eBullet1.GetComponent<EBulletController>().EBulletShoot(
             inBulletPos,
-            EBulletController.EBulletDirection.left);
+            EBulletController.EBulletDirectionX.left,
+            EBulletController.EBulletDirectionY.left);
 
         //レベル判定
         int enemyLevelBorder = (int)EnemyLevel.lv2;
@@ -98,13 +104,15 @@ public class EBulletGenerator : MonoBehaviour
             eBullet2.GetComponent<Renderer>().material.color = E_BULLET_STRIGHT_COLOR;
             eBullet2.GetComponent<EBulletController>().EBulletShoot(
                 inBulletPos,
-                EBulletController.EBulletDirection.up);
+                EBulletController.EBulletDirectionX.left,
+                EBulletController.EBulletDirectionY.left);
 
             GameObject eBullet3 = Instantiate(eBulletPrefab, inBulletPos, Quaternion.identity) as GameObject;
             eBullet3.GetComponent<Renderer>().material.color = E_BULLET_STRIGHT_COLOR;
             eBullet3.GetComponent<EBulletController>().EBulletShoot(
                 inBulletPos,
-                EBulletController.EBulletDirection.down);
+                EBulletController.EBulletDirectionX.left,
+                EBulletController.EBulletDirectionY.left);
 
         }
 
@@ -208,4 +216,37 @@ public class EBulletGenerator : MonoBehaviour
 
     }
 
+    //敵弾（直進 逆方向）
+    private void EBulletStraightOpposite(Vector2 inBulletPos, int inEnemyLevel) {
+
+        //正面
+        GameObject eBullet1 = Instantiate(eBulletPrefab, inBulletPos, Quaternion.identity) as GameObject;
+        eBullet1.GetComponent<Renderer>().material.color = E_BULLET_STRIGHT_COLOR;
+        eBullet1.GetComponent<EBulletController>().EBulletShoot(
+            inBulletPos,
+            EBulletController.EBulletDirectionX.right,
+            EBulletController.EBulletDirectionY.left);
+
+        //レベル判定
+        int enemyLevelBorder = (int)EnemyLevel.lv2;
+        if(inEnemyLevel >= enemyLevelBorder) {
+
+            //上下
+            GameObject eBullet2 = Instantiate(eBulletPrefab, inBulletPos, Quaternion.identity) as GameObject;
+            eBullet2.GetComponent<Renderer>().material.color = E_BULLET_STRIGHT_COLOR;
+            eBullet2.GetComponent<EBulletController>().EBulletShoot(
+                inBulletPos,
+                EBulletController.EBulletDirectionX.right,
+                EBulletController.EBulletDirectionY.left);
+
+            GameObject eBullet3 = Instantiate(eBulletPrefab, inBulletPos, Quaternion.identity) as GameObject;
+            eBullet3.GetComponent<Renderer>().material.color = E_BULLET_STRIGHT_COLOR;
+            eBullet3.GetComponent<EBulletController>().EBulletShoot(
+                inBulletPos,
+                EBulletController.EBulletDirectionX.right,
+                EBulletController.EBulletDirectionY.left);
+
+        }
+
+    }
 }

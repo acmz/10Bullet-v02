@@ -24,14 +24,14 @@ public class EnemyT4Controller : MonoBehaviour {
     private const int ENEMY_SCORE = 200;
 
     //敵弾発射の間隔（秒）
-    private const float SHOOT_INTERVAL = 1.5f;
+    private const float SHOOT_INTERVAL = 0.5f;
     private float shootTime;
 
     //敵弾の移動スピード
     private const float E_BULLET_MOVE_SPEED = 5.0f;
 
     //敵のレベル設定
-    private const int ENEMY_LEVEL = 6;
+    private const int ENEMY_LEVEL = 1;
 
     //敵の移動速度
     private const float ENEMY_MOVE_SPEED = 2.5f;
@@ -39,7 +39,8 @@ public class EnemyT4Controller : MonoBehaviour {
     //進入方向ベクトルを求めるためのY方向の変化量
     //（プラス方向を指定することで、Y軸マイナス側からプラス側＝画面下から上へ進む）
     //private const float ENEMY_MOVE_ANGLE_X = 1.0f;
-    private const float ENEMY_MOVE_ANGLE_Y = 1.0f;
+    private const float ENEMY_MOVE_ANGLE_Y_UP = 1.0f;
+    private const float ENEMY_MOVE_ANGLE_Y_DOWN = -1.0f;
 
     //生成から移動を開始するまでの間隔（秒）
     private const float MOVE_INTERVAL = 0.0f;
@@ -51,8 +52,8 @@ public class EnemyT4Controller : MonoBehaviour {
     //画面外判定（この範囲を超えたら自分自身を破棄する。T1・T3と同じ範囲を流用）
     private const float ENEMY_DESTROY_POS_LEFT = -10.0f;
     private const float ENEMY_DESTROY_POS_RIGHT = 30.0f;
-    private const float ENEMY_DESTROY_POS_UP = 15.0f;
-    private const float ENEMY_DESTROY_POS_DOWN = -15.0f;
+    private const float ENEMY_DESTROY_POS_UP = 6.0f;
+    private const float ENEMY_DESTROY_POS_DOWN = -6.0f;
 
     //発射する敵弾のプレハブ（Unityエディタ上で、既存の E_Bullet_Prefab をアサインする想定）
     //EBulletGenerator.cs を変更せずに済むよう、このスクリプト単体で弾を生成できるようにしている
@@ -82,8 +83,14 @@ public class EnemyT4Controller : MonoBehaviour {
             Vector2 endPos = this.gameObject.transform.position;
             Vector2 movePos;
 
-            //移動先のY座標をプラス方向へずらし、Y軸プラス方向への移動ベクトルを作る
-            endPos.y += ENEMY_MOVE_ANGLE_Y;
+            //移動先のY座標をずらし、Y軸方向への移動ベクトルを作る
+            //初期位置がマイナスの場合は上（マイナスからプラスへ）
+            //初期位置がプラスの場合は下（プラスからマイナスへ）
+            if(startPos.y <= 0f) {
+                endPos.y += ENEMY_MOVE_ANGLE_Y_UP;
+            } else {
+                endPos.y += ENEMY_MOVE_ANGLE_Y_DOWN;
+            }
             movePos = endPos - startPos;
 
             //移動方向ベクトルを正規化し、移動速度を掛けてRigidbody2Dの速度に設定する
@@ -125,7 +132,7 @@ public class EnemyT4Controller : MonoBehaviour {
 
     }
 
-    //ランダムな角度で弾を1発発射する
+    //直進弾を1発発射する
     private void ShootRandomAngleBullet() {
 
         //敵の位置を基に、敵弾を発射
@@ -133,7 +140,7 @@ public class EnemyT4Controller : MonoBehaviour {
         this.eBulletObj.GetComponent<EBulletGenerator>().EBulletGenerate(
             enemyPos
             , ENEMY_LEVEL
-            , EBulletGenerator.EBulletType.random);
+            , EBulletGenerator.EBulletType.straight);
 
         //発射間隔をリセット
         this.shootTime = 0f;

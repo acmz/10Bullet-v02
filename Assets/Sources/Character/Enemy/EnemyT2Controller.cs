@@ -27,7 +27,7 @@ public class EnemyT2Controller : MonoBehaviour {
     //private const float ENEMY_MOVE_ANGLE_Y = 0.5f;
 
     //敵移動済み判定フラグ
-    private Boolean enemyMoveEnabled = false;
+    private bool enemyMoveEnabled = false;
 
     //敵を生成してから移動停止するまでの時間
     private const float MOVE_TIME = 2.0f;
