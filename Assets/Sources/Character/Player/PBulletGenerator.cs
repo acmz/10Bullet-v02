@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PBulletGenerator : MonoBehaviour {
@@ -15,7 +13,7 @@ public class PBulletGenerator : MonoBehaviour {
     GameObject player;
 
     // Use this for initialization
-    void Start () {
+    void Start() {
 
         //GameDirectorと連携
         this.gameDirectorObj = GameObject.Find("GameDirector");
@@ -23,7 +21,7 @@ public class PBulletGenerator : MonoBehaviour {
     }
 
     // Update is called once per frame
-    void Update () {
+    void Update() {
 
         //キーボードの状態取得
         Keyboard keyboard = Keyboard.current;
@@ -60,7 +58,7 @@ public class PBulletGenerator : MonoBehaviour {
                     this.player = GameObject.Find("Player");
                 }
                 Vector2 playerPos = this.player.transform.position;
-                Vector2 pBulletVector2 = new Vector2(playerPos.x + P_BULLET_POS_SET, playerPos.y);
+                Vector2 pBulletVector2 = new(playerPos.x + P_BULLET_POS_SET, playerPos.y);
 
                 //自弾を生成し、発射
                 GameObject pBullet = Instantiate(this.pBulletPrefab,

@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
+//敵タイプT5：挟撃する敵。
+//x軸のマイナスからプラスへ、左から右へ移動する。
 public class EnemyT5Controller : MonoBehaviour {
 
     //点数
@@ -42,7 +41,7 @@ public class EnemyT5Controller : MonoBehaviour {
     private GameObject eBulletObj;
 
     // Use this for initialization
-    void Start () {
+    void Start() {
 
         //敵弾生成オブジェクト取得
         this.eBulletObj = GameObject.Find("E_Bullet_Generator");
@@ -50,7 +49,7 @@ public class EnemyT5Controller : MonoBehaviour {
     }
 
     // Update is called once per frame
-    void Update () {
+    void Update() {
 
         //敵弾発射
         this.shootTime += Time.deltaTime;
@@ -62,9 +61,6 @@ public class EnemyT5Controller : MonoBehaviour {
                 enemyPos
                 ,ENEMY_LEVEL
                 ,EBulletGenerator.EBulletType.straightOpposite);
-
-            //発射間隔をリセット
-            //this.shootTime = 0f;
 
             //弾発射済み
             this.shooted = true;
@@ -98,9 +94,6 @@ public class EnemyT5Controller : MonoBehaviour {
 
             //移動判定フラグをoffにする
             this.enemyMoveEnabled = false;
-
-            //移動開始時間を初期化
-            this.moveStartTime = 0f;
 
         }
 

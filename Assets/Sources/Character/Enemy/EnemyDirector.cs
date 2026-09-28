@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemyDirector : MonoBehaviour {
@@ -83,26 +82,26 @@ public class EnemyDirector : MonoBehaviour {
     void Update()
     {
 
-        if (generateEnemyEachWaveList == null) {
+        if(this.generateEnemyEachWaveList == null) {
             return;
         }
 
-        if(gameDirectorObj == null) {
+        if(this.gameDirectorObj == null) {
             return;
         }
 
-        if (this.gameDirectorObj.GetComponent<GameDirector>().WaveNum == 0) {
+        if(this.gameDirectorObj.GetComponent<GameDirector>().WaveNum == 0) {
             return;
         }
 
-        if (this.gameDirectorObj.GetComponent<GameDirector>().IsWaveInit) {
+        if(this.gameDirectorObj.GetComponent<GameDirector>().IsWaveInit) {
             return;
         }
 
         //GameDirectorから現在のWave数を取得
         //Debug.Log("currentWaveNum : " + this.currentWaveNum);
         //Debug.Log("WaveNum : " + this.gameDirectorObj.GetComponent<GameDirector>().WaveNum);
-        if (this.currentWaveNum < this.gameDirectorObj.GetComponent<GameDirector>().WaveNum) {
+        if(this.currentWaveNum < this.gameDirectorObj.GetComponent<GameDirector>().WaveNum) {
 
             //現在のWaveの敵生成パターンリストを取得する。
             this.currentWaveNum = this.gameDirectorObj.GetComponent<GameDirector>().WaveNum;
@@ -116,22 +115,22 @@ public class EnemyDirector : MonoBehaviour {
         if (this.thisWaveEnemyPatternIndex < thisWaveEnemyPattern.Count) {
 
             //生成パターン取得。
-            generateParameter = thisWaveEnemyPattern[this.thisWaveEnemyPatternIndex];
+            this.generateParameter = this.thisWaveEnemyPattern[this.thisWaveEnemyPatternIndex];
 
-            if (generateParameter == null) {
+            if(this.generateParameter == null) {
                 return;
             }
 
             //現在の時間が敵の出現タイムを下回ったら、敵を出現させる。
-            this.generateTime = float.Parse(generateParameter[(int)GenerateEnemyProperty.time]);
-            if (generateTime >= this.gameDirectorObj.GetComponent<GameDirector>().TimeLeft) {
+            this.generateTime = float.Parse(this.generateParameter[(int)GenerateEnemyProperty.time]);
+            if(this.generateTime >= this.gameDirectorObj.GetComponent<GameDirector>().TimeLeft) {
 
                 //敵を生成する。
-                int generateType = int.Parse(generateParameter[(int)GenerateEnemyProperty.type]);
-                float generateXPos = float.Parse(generateParameter[(int)GenerateEnemyProperty.xPos]);
-                float generateYPos = float.Parse(generateParameter[(int)GenerateEnemyProperty.yPos]);
+                int generateType = int.Parse(this.generateParameter[(int)GenerateEnemyProperty.type]);
+                float generateXPos = float.Parse(this.generateParameter[(int)GenerateEnemyProperty.xPos]);
+                float generateYPos = float.Parse(this.generateParameter[(int)GenerateEnemyProperty.yPos]);
 
-                GenerateEnemy(generateType, generateXPos, generateYPos);
+                this.GenerateEnemy(generateType, generateXPos, generateYPos);
                 this.thisWaveEnemyPatternIndex++;
 
             }
@@ -144,14 +143,14 @@ public class EnemyDirector : MonoBehaviour {
     public void InitEnemyGenerate(List<string> inEnemyPatternList) {
 
         //同一wave内での敵出現パターン
-        List<string[]> generateEnemyPattern = new List<string[]>();
+        List<string[]> generateEnemyPattern = new();
 
         //wave数（コントロールブレイク用）
         int waveNum = 1;
 
-        foreach (string record in inEnemyPatternList) {
+        foreach(string record in inEnemyPatternList) {
 
-            if (record.Length <= 0) {
+            if(record.Length <= 0) {
                 continue;
             }
 
@@ -162,10 +161,10 @@ public class EnemyDirector : MonoBehaviour {
             //出現wave判定(enemyListのIndex設定）
             int recordWaveNum = int.Parse(splitRecord[(int)GeneratePatternProperty.wave]);
 
-            if (waveNum != recordWaveNum) {
+            if(waveNum != recordWaveNum) {
 
                 //各waveの出現パターンリストを格納。
-                generateEnemyEachWaveList.Add(generateEnemyPattern);
+                this.generateEnemyEachWaveList.Add(generateEnemyPattern);
                 generateEnemyPattern = new List<string[]>();
                 waveNum = recordWaveNum;
 
@@ -192,7 +191,7 @@ public class EnemyDirector : MonoBehaviour {
     //敵の出現タイミングを知る(Wave数、時間)ために、GameDirectorオブジェクトを受け取る。
     public void SetGameDirectorObj(GameObject inGameDirector) {
 
-        gameDirectorObj = inGameDirector;
+        this.gameDirectorObj = inGameDirector;
 
     }
 
@@ -207,7 +206,7 @@ public class EnemyDirector : MonoBehaviour {
     private void GenerateEnemy(int inEnemyType, float inXPos, float inYPos) {
 
         //敵の種類を判断して、生成する。
-        switch (inEnemyType) {
+        switch(inEnemyType) {
             case (int)EnemyType.T1:
                 this.enemyT1GeneratorObj.GetComponent<EnemyT1Generator>().GenerateEnemy(inXPos, inYPos);
                 break;
@@ -232,6 +231,8 @@ public class EnemyDirector : MonoBehaviour {
                 this.enemyT6GeneratorObj.GetComponent<EnemyT6Generator>().GenerateEnemy(inXPos, inYPos);
                 break;
 
+            default:
+                break;
         }
 
     }

@@ -1,6 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using unityroom.Api;
@@ -34,7 +32,7 @@ public class GameDirector : MonoBehaviour {
     private int waveNum = 0;
     public int WaveNum {
         get {
-            return waveNum;
+            return this.waveNum;
         }
     }
 
@@ -46,7 +44,7 @@ public class GameDirector : MonoBehaviour {
     private float timeLeft = 0f;
     public float TimeLeft {
         get {
-            return timeLeft;
+            return this.timeLeft;
         }
     }
 
@@ -54,7 +52,7 @@ public class GameDirector : MonoBehaviour {
     private bool isWaveInit = false;
     public bool IsWaveInit {
         get {
-            return isWaveInit;
+            return this.isWaveInit;
         }
     }
 
@@ -72,7 +70,7 @@ public class GameDirector : MonoBehaviour {
     //private float gameOverWaitTime = 0f;
 
     // Use this for initialization
-    void Start () {
+    void Start() {
 
         //ゲームオーバー非表示
         this.gameOverUI = GameObject.Find("GameOver");
@@ -99,7 +97,7 @@ public class GameDirector : MonoBehaviour {
     }
 
     // Update is called once per frame
-    void Update () {
+    void Update() {
 
         //ゲームオーバー中なら何もしない
         if(this.isGameOver) {
@@ -124,7 +122,7 @@ public class GameDirector : MonoBehaviour {
         //残弾数と残り時間のリセット、Wave数の設定
         if(this.isWaveInit) {
 
-            StartCoroutine("InitPlayerStatus", 0.5f);
+            _ = this.StartCoroutine("InitPlayerStatus", 0.5f);
             return;
 
         }
@@ -144,14 +142,14 @@ public class GameDirector : MonoBehaviour {
     private IEnumerator InitPlayerStatus(float inTime) {
 
         //初期化処理中に再度呼ばれたら、何もせずに抜ける
-        if (this.isSleeping) {
+        if(this.isSleeping) {
             yield break;
         }
 
         this.isSleeping = true;
 
         //残弾数回復
-        while (this.pBulletStock < P_BULLET_MAX) {
+        while(this.pBulletStock < P_BULLET_MAX) {
 
             yield return new WaitForSeconds(inTime);
             this.PBulletNumPlus();
@@ -270,9 +268,7 @@ public class GameDirector : MonoBehaviour {
 
         //残り時間が0以下になったら、0固定にする
         if(this.timeLeft <= 0f) {
-
             this.timeLeft = 0f;
-
         }
 
         //表示更新

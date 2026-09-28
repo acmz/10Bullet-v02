@@ -1,11 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class PBulletController : MonoBehaviour {
 
     //自弾のオブジェクト
-    Rigidbody2D pBulletBody;
+    private Rigidbody2D pBulletBody;
 
     //自弾の移動スピード
     private const float P_BULLET_MOVE_SPEED = 15.0f;
@@ -19,12 +17,12 @@ public class PBulletController : MonoBehaviour {
     private const float P_BULLET_DESTROY_POS_UP = 6.0f;
     private const float P_BULLET_DESTROY_POS_DOWN = -6.0f;
     // Use this for initialization
-    void Start () {
+    void Start() {
         
     }
-	
-	// Update is called once per frame
-	void Update () {
+
+    // Update is called once per frame
+    void Update() {
 
         //画面外に出たら自分自身を破棄する
         if(this.gameObject.transform.position.x < P_BULLET_DESTROY_POS_LEFT

@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour {
@@ -18,14 +16,14 @@ public class PlayerController : MonoBehaviour {
     private const float WINDOW_LIMIT_BOTTOM = -3.6f;
 
     // Use this for initialization
-    void Start () {
+    void Start() {
 
         playerBody = GetComponent<Rigidbody2D>();
 
 	}
-	
-	// Update is called once per frame
-	void Update () {
+
+    // Update is called once per frame
+    void Update() {
 
         //自機の移動
         int keyLfRi = 0;
@@ -40,20 +38,20 @@ public class PlayerController : MonoBehaviour {
         }
 
         //左右移動
-        if(keyboard.leftArrowKey.isPressed && transform.position.x > WINDOW_LIMIT_LEFT) {
+        if(keyboard.leftArrowKey.isPressed && this.transform.position.x > WINDOW_LIMIT_LEFT) {
             keyLfRi = -1;
         }
 
-        if(keyboard.rightArrowKey.isPressed && transform.position.x < WINDOW_LIMIT_RIGHT) {
+        if(keyboard.rightArrowKey.isPressed && this.transform.position.x < WINDOW_LIMIT_RIGHT) {
             keyLfRi = 1;
         }
 
         //上下移動
-        if(keyboard.upArrowKey.isPressed && transform.position.y < WINDOW_LIMIT_TOP) {
+        if(keyboard.upArrowKey.isPressed && this.transform.position.y < WINDOW_LIMIT_TOP) {
             keyUpDw = 1;
         }
 
-        if(keyboard.downArrowKey.isPressed && transform.position.y > WINDOW_LIMIT_BOTTOM) {
+        if(keyboard.downArrowKey.isPressed && this.transform.position.y > WINDOW_LIMIT_BOTTOM) {
             keyUpDw = -1;
         }
 
@@ -73,7 +71,7 @@ public class PlayerController : MonoBehaviour {
         if(collision.gameObject.name == "E_Bullet_Prefab(Clone)") {
 
             //自分自身を消す
-            Destroy(gameObject);
+            Destroy(this.gameObject);
 
         }
 

@@ -1,10 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 //外部ファイル読み込み用のクラスライブラリ読み込み
-using System.IO;    //System.IO.FileInfo, System.IO.StreamReader, System.IO.StreamWriter
-using System.Text;  //Encoding
 using System;       //Exception
 
 
@@ -39,7 +36,7 @@ public class FileReader : MonoBehaviour
     public List<string> ReadEnemyGeneratePattern() {
 
         //csvファイルの内容を格納するList
-        List<string> csvRecord = new List<string>();
+        List<string> csvRecord = new();
 
         //enemyGeneratePattern.csvファイルを読み込む
         TextAsset fi = Resources.Load("enemyGeneratePattern") as TextAsset;
@@ -50,7 +47,7 @@ public class FileReader : MonoBehaviour
             string[] sr = fi.text.Split(new string[] { "\r\n" }, StringSplitOptions.None);
             foreach(string lineStr in sr) {
 
-                if (lineStr.IndexOf("#") >= 0) {
+                if(lineStr.IndexOf("#") >= 0) {
                     //コメント行は無視する
                     continue;
                 }
@@ -61,7 +58,7 @@ public class FileReader : MonoBehaviour
             }
 
         }
-        catch (Exception e) {
+        catch(Exception e) {
             Debug.Log(e.Message);
         }
 

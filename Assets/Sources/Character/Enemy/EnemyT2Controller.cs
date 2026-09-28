@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class EnemyT2Controller : MonoBehaviour {
 
@@ -40,21 +37,21 @@ public class EnemyT2Controller : MonoBehaviour {
     private const float ENEMY_DESTROY_POS_DOWN = -6.0f;
 
     //敵弾生成オブジェクト
-    GameObject eBulletObj;
+    private GameObject eBulletObj;
 
     // Use this for initialization
-    void Start () {
+    void Start() {
 
         this.eBulletObj = GameObject.Find("E_Bullet_Generator");
 
     }
 
     // Update is called once per frame
-    void Update () {
+    void Update() {
 
         //敵弾発射
         this.shootTime += Time.deltaTime;
-        if (this.shootTime >= SHOOT_INTERVAL) {
+        if(this.shootTime >= SHOOT_INTERVAL) {
 
             //敵の位置を基に、敵弾を発射
             Vector2 enemyPos = this.gameObject.transform.position;
@@ -110,8 +107,7 @@ public class EnemyT2Controller : MonoBehaviour {
 
             //移動を停止させる
             //敵Rigidbody取得
-            Rigidbody2D enemyBody;
-            enemyBody = this.GetComponent<Rigidbody2D>();
+            Rigidbody2D enemyBody = this.GetComponent<Rigidbody2D>();
 
             //敵の移動停止
             enemyBody.linearVelocity = Vector2.zero;
@@ -133,7 +129,7 @@ public class EnemyT2Controller : MonoBehaviour {
     private void OnTriggerEnter2D(Collider2D collision) {
 
         //自弾に当たったら消滅
-        if (collision.gameObject.name == "P_Bullet_Prefab(Clone)") {
+        if(collision.gameObject.name == "P_Bullet_Prefab(Clone)") {
 
             //Directorと連携
             GameObject gameDirectorObj = GameObject.Find("GameDirector");

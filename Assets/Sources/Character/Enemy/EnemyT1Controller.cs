@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class EnemyT1Controller : MonoBehaviour {
 
@@ -36,10 +33,10 @@ public class EnemyT1Controller : MonoBehaviour {
     private const float ENEMY_DESTROY_POS_DOWN = -6.0f;
 
     //敵弾生成オブジェクト
-    GameObject eBulletObj;
+    private GameObject eBulletObj;
 
     // Use this for initialization
-    void Start () {
+    void Start() {
 
         //敵弾生成オブジェクト取得
         this.eBulletObj = GameObject.Find("E_Bullet_Generator");
@@ -47,7 +44,7 @@ public class EnemyT1Controller : MonoBehaviour {
     }
 
     // Update is called once per frame
-    void Update () {
+    void Update() {
 
         //敵弾発射
         this.shootTime += Time.deltaTime;
@@ -92,9 +89,6 @@ public class EnemyT1Controller : MonoBehaviour {
 
             //移動判定フラグをoffにする
             this.enemyMoveEnabled = false;
-
-            //移動開始時間を初期化
-            this.moveStartTime = 0f;
 
         }
 

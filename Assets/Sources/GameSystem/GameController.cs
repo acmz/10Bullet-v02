@@ -1,14 +1,12 @@
 using UnityEngine;
 
-public class GameController : MonoBehaviour
-{
+public class GameController : MonoBehaviour {
 
     //GameDirectorオブジェクト
-    GameObject gameDirectorObj;
+    private GameObject gameDirectorObj;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
+    void Start() {
         
         //GameDirectorと連携
         this.gameDirectorObj = GameObject.Find("GameDirector");
@@ -16,8 +14,7 @@ public class GameController : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
-    {
+    void Update() {
 
         //画面上から自弾がすべて消えたら、撃破数を初期化する
         if(GameObject.Find("P_Bullet_Prefab(Clone)") == null) {

@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 //敵タイプT6（サンプル：出現時点の自機の座標へ直進し、その方向を向く敵）の生成役
@@ -11,12 +9,12 @@ public class EnemyT6Generator : MonoBehaviour {
     public GameObject enemyT6Prefab;
 
     // Use this for initialization
-    void Start () {
+    void Start() {
 
     }
 
     // Update is called once per frame
-    void Update () {
+    void Update() {
 
     }
 
@@ -24,11 +22,12 @@ public class EnemyT6Generator : MonoBehaviour {
     public void GenerateEnemy(float inXPos, float inYPos) {
 
         //引数で受け取ったX・Y座標から、出現位置のベクトルを作成する
-        Vector2 enemyVector2 = new Vector2(inXPos, inYPos);
+        Vector2 enemyVector2 = new(inXPos, inYPos);
+
 
         //T6敵のプレハブを、指定座標・回転なしで生成する
         //（生成直後、EnemyT6Controller.Start() が自機の座標を取得し、向きと進行方向を上書き設定する）
-        Instantiate(enemyT6Prefab, enemyVector2, Quaternion.identity);
+        _ = Instantiate(this.enemyT6Prefab, enemyVector2, Quaternion.identity);
 
     }
 

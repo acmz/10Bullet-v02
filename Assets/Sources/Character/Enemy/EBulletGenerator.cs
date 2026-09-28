@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class EBulletGenerator : MonoBehaviour
 {
@@ -9,12 +7,12 @@ public class EBulletGenerator : MonoBehaviour
     private const float E_BULLET_POS_SET = 0f;
 
     //弾の色
-    private Color E_BULLET_STRIGHT_COLOR = new Color(1.0f, 1.0f, 0.5f, 1.0f);
-    private Color E_BULLET_HOMING_COLOR = new Color(1.0f, 0.5f, 0.5f, 1.0f);
-    private Color E_BULLET_FAN_COLOR = new Color(1.0f, 0.7f, 0.4f, 1.0f);
+    private Color E_BULLET_STRIGHT_COLOR = new(1.0f, 1.0f, 0.5f, 1.0f);
+    private Color E_BULLET_HOMING_COLOR = new(1.0f, 0.5f, 0.5f, 1.0f);
+    private Color E_BULLET_FAN_COLOR = new(1.0f, 0.7f, 0.4f, 1.0f);
 
     //レベル上昇のボーダーライン
-    public enum EnemyLevel:int {
+    public enum EnemyLevel : int {
         lv1 = 1
         , lv2 = 5
         , lv3 = 7
@@ -30,17 +28,15 @@ public class EBulletGenerator : MonoBehaviour
     }
 
     //扇状弾の開き角度（度）。画面左方向（自機側）を中心に左右均等へ広げる
-    private float SPREAD_ANGLE = 45.0f;
+    private const float SPREAD_ANGLE = 45.0f;
 
     // Start is called before the first frame update
-    void Start()
-    {
+    void Start() {
         
     }
 
     // Update is called once per frame
-    void Update()
-    {
+    void Update() {
 
     }
 
@@ -50,10 +46,10 @@ public class EBulletGenerator : MonoBehaviour
                                 EBulletType inEBulletType) {
 
         //敵の位置（inEnemyPos）を基に、敵弾の発射位置を設定
-        Vector2 eBulletVector2 = new Vector2(inEnemyPos.x + E_BULLET_POS_SET, inEnemyPos.y);
+        Vector2 eBulletVector2 = new(inEnemyPos.x + E_BULLET_POS_SET, inEnemyPos.y);
 
         //敵弾を生成し、発射
-        switch (inEBulletType) {
+        switch(inEBulletType) {
 
             case EBulletType.straight:
                 //直進弾
@@ -80,6 +76,9 @@ public class EBulletGenerator : MonoBehaviour
                 this.EBulletStraightOpposite(eBulletVector2, inEnemyLevel);
                 break;
 
+            default:
+                break;
+
         }
 
     }
@@ -88,8 +87,8 @@ public class EBulletGenerator : MonoBehaviour
     private void EBulletStraight(Vector2 inBulletPos, int inEnemyLevel) {
 
         //正面
-        GameObject eBullet1 = Instantiate(eBulletPrefab, inBulletPos, Quaternion.identity) as GameObject;
-        eBullet1.GetComponent<Renderer>().material.color = E_BULLET_STRIGHT_COLOR;
+        GameObject eBullet1 = Instantiate(this.eBulletPrefab, inBulletPos, Quaternion.identity);
+        eBullet1.GetComponent<Renderer>().material.color = this.E_BULLET_STRIGHT_COLOR;
         eBullet1.GetComponent<EBulletController>().EBulletShoot(
             inBulletPos,
             EBulletController.EBulletDirectionX.left,
@@ -100,15 +99,15 @@ public class EBulletGenerator : MonoBehaviour
         if(inEnemyLevel >= enemyLevelBorder) {
 
             //上下
-            GameObject eBullet2 = Instantiate(eBulletPrefab, inBulletPos, Quaternion.identity) as GameObject;
-            eBullet2.GetComponent<Renderer>().material.color = E_BULLET_STRIGHT_COLOR;
+            GameObject eBullet2 = Instantiate(this.eBulletPrefab, inBulletPos, Quaternion.identity);
+            eBullet2.GetComponent<Renderer>().material.color = this.E_BULLET_STRIGHT_COLOR;
             eBullet2.GetComponent<EBulletController>().EBulletShoot(
                 inBulletPos,
                 EBulletController.EBulletDirectionX.left,
                 EBulletController.EBulletDirectionY.left);
 
-            GameObject eBullet3 = Instantiate(eBulletPrefab, inBulletPos, Quaternion.identity) as GameObject;
-            eBullet3.GetComponent<Renderer>().material.color = E_BULLET_STRIGHT_COLOR;
+            GameObject eBullet3 = Instantiate(this.eBulletPrefab, inBulletPos, Quaternion.identity) as GameObject;
+            eBullet3.GetComponent<Renderer>().material.color = this.E_BULLET_STRIGHT_COLOR;
             eBullet3.GetComponent<EBulletController>().EBulletShoot(
                 inBulletPos,
                 EBulletController.EBulletDirectionX.left,
@@ -122,7 +121,7 @@ public class EBulletGenerator : MonoBehaviour
     private void EBulletHoming(Vector2 inBulletPos, int inEnemyLevel) {
 
         //自機の位置を取得し、打ち出す方角を決定
-        if (GameObject.Find("Player") == null) {
+        if(GameObject.Find("Player") == null) {
             return;
         }
         Vector2 playerPos = GameObject.Find("Player").transform.position;
@@ -138,7 +137,7 @@ public class EBulletGenerator : MonoBehaviour
         }
 
         GameObject eBullet1 = Instantiate(eBulletPrefab, inBulletPos, Quaternion.identity) as GameObject;
-        eBullet1.GetComponent<Renderer>().material.color = E_BULLET_HOMING_COLOR;
+        eBullet1.GetComponent<Renderer>().material.color = this.E_BULLET_HOMING_COLOR;
         eBullet1.GetComponent<EBulletController>().EBulletShoot(
             inBulletPos,
             playerPos,
@@ -181,8 +180,10 @@ public class EBulletGenerator : MonoBehaviour
             Vector2 direction = new Vector2(Mathf.Cos(radian), Mathf.Sin(radian));
 
             //扇状弾のプレハブを、敵の座標・回転なしで生成する
-            GameObject eFanBullet = Instantiate(eBulletPrefab, inBulletPos, Quaternion.identity) as GameObject;
-            eFanBullet.GetComponent<Renderer>().material.color = E_BULLET_FAN_COLOR;
+            GameObject eFanBullet = Instantiate(this.eBulletPrefab,
+                                                inBulletPos,
+                                                Quaternion.identity);
+            eFanBullet.GetComponent<Renderer>().material.color = this.E_BULLET_FAN_COLOR;
             eFanBullet.GetComponent<EBulletController>().EBulletShoot(direction);
 
         }
@@ -196,7 +197,7 @@ public class EBulletGenerator : MonoBehaviour
         Vector2 shootPos = this.gameObject.transform.position;
 
         //0～360度の範囲でランダムな角度（度数法）を決定する
-        float randomAngleDeg = UnityEngine.Random.Range(0f, 360f);
+        float randomAngleDeg = Random.Range(0f, 360f);
 
         //度数法の角度をラジアンに変換する（Mathf.Cos/Sinはラジアンを使うため）
         float randomAngleRad = randomAngleDeg * Mathf.Deg2Rad;
@@ -221,7 +222,7 @@ public class EBulletGenerator : MonoBehaviour
 
         //正面
         GameObject eBullet1 = Instantiate(eBulletPrefab, inBulletPos, Quaternion.identity) as GameObject;
-        eBullet1.GetComponent<Renderer>().material.color = E_BULLET_STRIGHT_COLOR;
+        eBullet1.GetComponent<Renderer>().material.color = this.E_BULLET_STRIGHT_COLOR;
         eBullet1.GetComponent<EBulletController>().EBulletShoot(
             inBulletPos,
             EBulletController.EBulletDirectionX.right,
@@ -232,15 +233,15 @@ public class EBulletGenerator : MonoBehaviour
         if(inEnemyLevel >= enemyLevelBorder) {
 
             //上下
-            GameObject eBullet2 = Instantiate(eBulletPrefab, inBulletPos, Quaternion.identity) as GameObject;
-            eBullet2.GetComponent<Renderer>().material.color = E_BULLET_STRIGHT_COLOR;
+            GameObject eBullet2 = Instantiate(this.eBulletPrefab, inBulletPos, Quaternion.identity);
+            eBullet2.GetComponent<Renderer>().material.color = this.E_BULLET_STRIGHT_COLOR;
             eBullet2.GetComponent<EBulletController>().EBulletShoot(
                 inBulletPos,
                 EBulletController.EBulletDirectionX.right,
                 EBulletController.EBulletDirectionY.left);
 
-            GameObject eBullet3 = Instantiate(eBulletPrefab, inBulletPos, Quaternion.identity) as GameObject;
-            eBullet3.GetComponent<Renderer>().material.color = E_BULLET_STRIGHT_COLOR;
+            GameObject eBullet3 = Instantiate(this.eBulletPrefab, inBulletPos, Quaternion.identity);
+            eBullet3.GetComponent<Renderer>().material.color = this.E_BULLET_STRIGHT_COLOR;
             eBullet3.GetComponent<EBulletController>().EBulletShoot(
                 inBulletPos,
                 EBulletController.EBulletDirectionX.right,

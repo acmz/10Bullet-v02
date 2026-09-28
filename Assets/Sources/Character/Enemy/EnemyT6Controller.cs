@@ -1,18 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using static EBulletGenerator;
 
-//敵タイプT6（サンプル）：出現した瞬間の自機の座標を記憶し、そこへ向けて直進する敵。
+//敵タイプT6：出現した瞬間の自機の座標を記憶し、そこへ向けて直進する敵。
 //移動中に自機が位置を変えても、狙う座標は出現時点のままで、追尾はしない
 //（自機を狙い撃つのではなく、「自機が居た場所」を通過するイメージ）。
 //
 //スプライト（三角形）は、回転していない状態で頂点がY軸プラス方向（真上）を向いている前提。
 //（Enemy_T6_Prefab の PolygonCollider2D の頂点座標から、そのように配置されていることを確認済み）
 //このスプライトをZ軸で回転させ、頂点が進行方向＝出現時点の自機の座標の方を向くようにする。
-//
-//※このスクリプトはサンプルであり、EnemyDirector.cs や EBulletGenerator.cs、
-//　GameScene.unity など既存ファイルへの組み込みはまだ行っていない。
 public class EnemyT6Controller : MonoBehaviour {
 
     //撃破時に加算する点数
@@ -47,15 +41,12 @@ public class EnemyT6Controller : MonoBehaviour {
 
     //敵弾生成オブジェクト
     private GameObject eBulletObj;
-    //発射する敵弾のプレハブ（Unityエディタ上で、既存の E_Bullet_Prefab をアサインする想定）
-    //EBulletGenerator.cs を変更せずに済むよう、このスクリプト単体で弾を生成できるようにしている
-    //public GameObject eBulletPrefab;
 
     //出現時に決定した進行方向。移動だけでなく、弾を発射する方向にもそのまま使う
     private Vector2 moveDirection;
 
     // Use this for initialization
-    void Start () {
+    void Start() {
 
         //出現した瞬間の自機の座標を取得するため、Playerオブジェクトを検索する
         GameObject playerObj = GameObject.Find("Player");
@@ -86,14 +77,6 @@ public class EnemyT6Controller : MonoBehaviour {
 
         //方向ベクトルの長さが0の場合（自機と全く同じ座標に出現した場合）は正規化できないため、既定方向を使う
         Vector2 direction = (inDirection.sqrMagnitude > 0f) ? inDirection.normalized : DEFAULT_DIRECTION;
-        //Vector2 direction = DEFAULT_DIRECTION;
-        //敵の移動方向を求める
-        //Vector2 startPos = this.gameObject.transform.position;
-        //Vector2 endPos = this.gameObject.transform.position;
-        //Vector2 movePos;
-
-        //endPos.x -= 1.0f;
-        //movePos = endPos - startPos;
 
         //敵Rigidbody取得
         Rigidbody2D enemyBody = this.GetComponent<Rigidbody2D>();
@@ -104,7 +87,6 @@ public class EnemyT6Controller : MonoBehaviour {
 
         //進行方向へ力を加え、物理的に移動を発生させる
         enemyBody.AddForce(direction);
-        //enemyBody.AddForce(movePos.normalized);
 
         //進行方向ベクトルから角度を求める（Atan2はX軸プラス方向を0度とするラジアン角を返す）
         float angleRad = Mathf.Atan2(direction.y, direction.x);
@@ -115,13 +97,10 @@ public class EnemyT6Controller : MonoBehaviour {
         //Z軸周りの回転として、スプライトの頂点が進行方向を向くように設定する
         this.gameObject.transform.rotation = Quaternion.Euler(0f, 0f, angleDeg);
 
-        //弾の発射方向にも使うため、進行方向を記憶しておく
-        //this.moveDirection = direction;
-
     }
 
     // Update is called once per frame
-    void Update () {
+    void Update() {
 
         //弾発射間隔の経過時間を加算する
         this.shootTime += Time.deltaTime;
@@ -130,16 +109,10 @@ public class EnemyT6Controller : MonoBehaviour {
 
             this.ShootBulletToMoveDirection();
 
-            //発射間隔カウンターをリセットする
-            //this.shootTime = 0f;
-
             //敵弾発射済み
             this.shooted = true;
 
         }
-
-        //求めた方向へ、移動とスプライトの向きを設定する
-        //this.SetMoveDirection(this.moveDirection);
 
         //画面外に出たら自分自身を破棄する
         if(this.gameObject.transform.position.x < ENEMY_DESTROY_POS_LEFT
@@ -157,30 +130,12 @@ public class EnemyT6Controller : MonoBehaviour {
     //敵の進行方向（moveDirection）へ弾を1発発射する
     private void ShootBulletToMoveDirection() {
 
-        //弾を生成するプレハブが未設定の場合は何もしない（null参照エラーを避ける）
-        //if(this.eBulletPrefab == null) {
-        //    return;
-        //}
-
-        //発射位置は敵の現在位置とする
-        Vector2 shootPos = this.gameObject.transform.position;
-
         //敵の位置を基に、敵弾を発射
         Vector2 enemyPos = this.gameObject.transform.position;
         this.eBulletObj.GetComponent<EBulletGenerator>().EBulletGenerate(
             enemyPos
             , ENEMY_LEVEL
             , EBulletGenerator.EBulletType.homing);
-
-        //敵弾のプレハブを、発射位置・回転なしで生成する
-        //GameObject eBullet = Instantiate(this.eBulletPrefab, shootPos, Quaternion.identity);
-
-        //EBulletController.cs に既にある「任意方向へ発射する」メソッド（扇状弾用に用意されたもの）を
-        //そのまま再利用し、敵の進行方向へ弾を撃ち出す。EBulletController.cs 自体は変更していない。
-        //EBulletController eBulletController = eBullet.GetComponent<EBulletController>();
-        //if(eBulletController != null) {
-        //    eBulletController.EBulletShoot(this.moveDirection);
-        //}
 
     }
 

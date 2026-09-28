@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 //敵タイプT3（扇状弾を放つ設置型）の生成役
@@ -10,12 +8,12 @@ public class EnemyT3Generator : MonoBehaviour {
     public GameObject enemyT3Prefab;
 
     // Use this for initialization
-    void Start () {
+    void Start() {
 
     }
 
     // Update is called once per frame
-    void Update () {
+    void Update() {
 
     }
 
@@ -23,10 +21,10 @@ public class EnemyT3Generator : MonoBehaviour {
     public void GenerateEnemy(float inXPos, float inYPos) {
 
         //引数で受け取ったX・Y座標から、出現位置のベクトルを作成する
-        Vector2 enemyVector2 = new Vector2(inXPos, inYPos);
+        Vector2 enemyVector2 = new(inXPos, inYPos);
 
         //T3敵のプレハブを、指定座標・回転なしで生成する
-        Instantiate(enemyT3Prefab, enemyVector2, Quaternion.identity);
+        _ = Instantiate(this.enemyT3Prefab, enemyVector2, Quaternion.identity);
 
     }
 

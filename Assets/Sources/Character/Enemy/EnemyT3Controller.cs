@@ -1,7 +1,4 @@
-using System;                              
-using System.Collections;                  
-using System.Collections.Generic;          
-using UnityEngine;                         
+using UnityEngine;
 
 //敵タイプT3：画面内の定位置で停止し、扇状弾をばら撒く設置型の敵
 //T1（直進弾・低スコア）、T2（ホーミング弾・高スコア）に続く第3の敵タイプ
@@ -59,10 +56,10 @@ public class EnemyT3Controller : MonoBehaviour {
     private const float ENEMY_DESTROY_POS_DOWN = -6.0f;
 
     //扇状弾を生成するオブジェクトへの参照
-    GameObject eBulletObj;
+    private GameObject eBulletObj;
 
     // Use this for initialization
-    void Start () {
+    void Start() {
 
         //シーン上の"E_Bullet_Generator"という名前のオブジェクトを検索して取得する
         this.eBulletObj = GameObject.Find("E_Bullet_Generator");
@@ -70,7 +67,7 @@ public class EnemyT3Controller : MonoBehaviour {
     }
 
     // Update is called once per frame
-    void Update () {
+    void Update() {
 
         //移動・弾発射で使うため、自分自身のRigidbody2Dコンポーネントを取得する
         Rigidbody2D enemyBody = this.GetComponent<Rigidbody2D>();
@@ -111,10 +108,10 @@ public class EnemyT3Controller : MonoBehaviour {
 
             //スウェイ用の速度ベクトルを初期化する（X方向には移動させない）
             Vector2 swayVelocity = Vector2.zero;
-            
+
             //cos関数を使い、滑らかに往復するY方向の速度を計算する
             swayVelocity.y = Mathf.Cos(this.swayTime * SWAY_SPEED) * SWAY_AMPLITUDE;
-            
+
             //計算した速度をRigidbody2Dに設定し、上下に揺れる動きを実現する
             enemyBody.linearVelocity = swayVelocity;
 
@@ -128,7 +125,7 @@ public class EnemyT3Controller : MonoBehaviour {
             //発射位置の基準として、自分自身の現在座標を取得する
             Vector2 enemyPos = this.gameObject.transform.position;
             //扇状弾生成オブジェクトが見つかっている場合のみ発射処理を行う（未配置時のnull参照エラーを避ける）
-            if (this.eBulletObj != null) {
+            if(this.eBulletObj != null) {
 
                 //扇状弾生成オブジェクトのEFanBulletGeneratorコンポーネントを取得し、扇状弾の生成を依頼する
                 this.eBulletObj.GetComponent<EBulletGenerator>().EBulletGenerate(
