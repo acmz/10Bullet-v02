@@ -25,8 +25,7 @@ public class EnemyT5Controller : MonoBehaviour {
     private const float ENEMY_MOVE_SPEED = 3.0f;
 
     //敵の移動方向
-    private const float ENEMY_MOVE_ANGLE_X = -1.0f;
-    //private const float ENEMY_MOVE_ANGLE_Y = 0.5f;
+    private static readonly Vector2 MOVE_DIRECTION = Vector2.right;
 
     //敵移動済み判定フラグ
     private bool enemyMoveEnabled = true;
@@ -37,6 +36,9 @@ public class EnemyT5Controller : MonoBehaviour {
     private const float ENEMY_DESTROY_POS_UP = 6.0f;
     private const float ENEMY_DESTROY_POS_DOWN = -6.0f;
 
+    //出現時に決定した進行方向。
+    private Vector2 moveDirection;
+
     //敵弾生成オブジェクト
     private GameObject eBulletObj;
 
@@ -45,6 +47,9 @@ public class EnemyT5Controller : MonoBehaviour {
 
         //敵弾生成オブジェクト取得
         this.eBulletObj = GameObject.Find("E_Bullet_Generator");
+
+        //敵の進行方向を設定
+        this.moveDirection = MOVE_DIRECTION;
 
     }
 
@@ -56,12 +61,7 @@ public class EnemyT5Controller : MonoBehaviour {
         if(this.shootTime >= SHOOT_INTERVAL && !this.shooted) {
 
             //敵の位置を基に、敵弾を発射
-            Vector2 enemyPos = this.gameObject.transform.position;
-            this.eBulletObj.GetComponent<EBulletGenerator>().EBulletGenerate(
-                enemyPos
-                ,ENEMY_LEVEL
-                ,EBulletGenerator.EBulletType.straightOpposite);
-
+            this.ShootBullet();
             //弾発射済み
             this.shooted = true;
 
@@ -74,23 +74,7 @@ public class EnemyT5Controller : MonoBehaviour {
             //Debug.Log("collision = " + this.gameObject.name);
 
             //敵を移動させる
-            //敵の移動方向を求める
-            Vector2 startPos = this.gameObject.transform.position;
-            Vector2 endPos = this.gameObject.transform.position;
-            Vector2 movePos;
-
-            endPos.x -= ENEMY_MOVE_ANGLE_X;
-            movePos = endPos - startPos;
-
-            //敵Rigidbody取得
-            Rigidbody2D enemyBody;
-            enemyBody = this.GetComponent<Rigidbody2D>();
-
-            //敵の移動方向（敵の移動方向.normalized）とスピードを設定
-            enemyBody.linearVelocity = movePos.normalized * ENEMY_MOVE_SPEED;
-
-            //敵に力を加え、移動
-            enemyBody.AddForce(movePos.normalized);
+            this.EnemyMove(this.moveDirection);
 
             //移動判定フラグをoffにする
             this.enemyMoveEnabled = false;
@@ -106,6 +90,32 @@ public class EnemyT5Controller : MonoBehaviour {
             Destroy(this.gameObject);
 
         }
+    }
+
+    //敵の進行方向（moveDirection）へ弾を1発発射する
+    private void ShootBullet() {
+
+        //敵の位置を基に、敵弾を発射
+        Vector2 enemyPos = this.gameObject.transform.position;
+        this.eBulletObj.GetComponent<EBulletGenerator>().EBulletGenerate(
+            enemyPos
+            , ENEMY_LEVEL
+            , EBulletGenerator.EBulletType.straightOpposite);
+
+    }
+
+    //敵の進行方向へ移動する
+    private void EnemyMove(Vector2 inDirection) {
+
+        //敵Rigidbody取得
+        Rigidbody2D enemyBody = this.GetComponent<Rigidbody2D>();
+
+        //進行方向（direction）とスピードを設定
+        enemyBody.linearVelocity = inDirection * ENEMY_MOVE_SPEED;
+
+        //進行方向へ力を加え、物理的に移動を発生させる
+        enemyBody.AddForce(inDirection);
+
     }
 
     //自弾に当たったら、点数を加算して自分自身を消す

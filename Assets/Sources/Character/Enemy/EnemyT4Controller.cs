@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 //敵タイプT4：画面上下から出現し、Y軸に沿って直進しながら、直進弾を発射し続ける敵。
 //
@@ -22,8 +23,13 @@ public class EnemyT4Controller : MonoBehaviour {
     //進入方向ベクトルを求めるためのY方向の変化量
     //（プラス方向を指定することで、Y軸マイナス側からプラス側＝画面下から上へ進む）
     //private const float ENEMY_MOVE_ANGLE_X = 1.0f;
-    private const float ENEMY_MOVE_ANGLE_Y_UP = 1.0f;
-    private const float ENEMY_MOVE_ANGLE_Y_DOWN = -1.0f;
+    //private const float ENEMY_MOVE_ANGLE_Y_UP = 1.0f;
+    //private const float ENEMY_MOVE_ANGLE_Y_DOWN = -1.0f;
+    private static readonly Vector2 MOVE_DIRECTION_UP = Vector2.up;
+    private static readonly Vector2 MOVE_DIRECTION_DOWN = Vector2.down;
+
+    //Y軸の中央座標
+    private static float DISPLAY_CENTER_POS = 0.5f;
 
     //生成から移動を開始するまでの間隔（秒）
     private const float MOVE_INTERVAL = 0.0f;
@@ -38,6 +44,9 @@ public class EnemyT4Controller : MonoBehaviour {
     private const float ENEMY_DESTROY_POS_UP = 6.0f;
     private const float ENEMY_DESTROY_POS_DOWN = -6.0f;
 
+    //出現時に決定した進行方向。
+    private Vector2 moveDirection;
+
     //敵弾生成オブジェクト
     private GameObject eBulletObj;
 
@@ -45,53 +54,49 @@ public class EnemyT4Controller : MonoBehaviour {
     void Start() {
 
         this.eBulletObj = GameObject.Find("E_Bullet_Generator");
+
+        //敵の進行方向を設定
+        this.moveDirection = this.SetMoveDirection(this.gameObject.transform.position);
+
+    }
+
+    //敵の進行方向を設定する
+    private Vector2 SetMoveDirection(Vector2 inStartPosition) {
+
+        //移動先のY軸方向を決める
+        //初期位置が中央よりマイナスの場合は上（マイナスからプラスへ）
+        //初期位置が中央よりプラスの場合は下（プラスからマイナスへ）
+        if(inStartPosition.y < DISPLAY_CENTER_POS) {
+            return MOVE_DIRECTION_UP;
+        }
+        return MOVE_DIRECTION_DOWN;
+
     }
 
     // Update is called once per frame
     void Update() {
 
-        //敵の移動（Y軸マイナス側からプラス側へ、画面下から上へ直進する）
-        this.moveStartTime += Time.deltaTime;
-        if(this.enemyMoveEnabled && this.moveStartTime >= MOVE_INTERVAL) {
-
-            //現在位置を移動開始地点として取得する
-            Vector2 startPos = this.gameObject.transform.position;
-            Vector2 endPos = this.gameObject.transform.position;
-            Vector2 movePos;
-
-            //移動先のY座標をずらし、Y軸方向への移動ベクトルを作る
-            //初期位置がマイナスの場合は上（マイナスからプラスへ）
-            //初期位置がプラスの場合は下（プラスからマイナスへ）
-            if(startPos.y <= 0f) {
-                endPos.y += ENEMY_MOVE_ANGLE_Y_UP;
-            } else {
-                endPos.y += ENEMY_MOVE_ANGLE_Y_DOWN;
-            }
-            movePos = endPos - startPos;
-
-            //移動・弾発射で使うため、自分自身のRigidbody2Dコンポーネントを取得する
-            Rigidbody2D enemyBody = this.GetComponent<Rigidbody2D>();
-
-            //移動方向ベクトルを正規化し、移動速度を掛けてRigidbody2Dの速度に設定する
-            enemyBody.linearVelocity = movePos.normalized * ENEMY_MOVE_SPEED;
-
-            //移動方向へ力を加え、物理的に移動を発生させる
-            enemyBody.AddForce(movePos.normalized);
-
-            //一度速度を設定したら、以後は再設定しない（Y軸プラス方向へ進み続ける）
-            this.enemyMoveEnabled = false;
-
-        }
-
         //弾発射間隔の経過時間を加算する
         this.shootTime += Time.deltaTime;
-        //発射間隔（SHOOT_INTERVAL）を超えたら、ランダムな角度で弾を発射する
+        //発射間隔（SHOOT_INTERVAL）を超えたら、直進弾を発射する
         if(this.shootTime >= SHOOT_INTERVAL) {
 
             this.ShootBullet();
 
-            //発射間隔カウンターをリセットする
+            //発射間隔カウンターをリセットする（繰り返し発射するため）
             this.shootTime = 0f;
+
+        }
+
+        //敵の移動（Y軸マイナス側からプラス側へ、画面下から上へ直進する）
+        this.moveStartTime += Time.deltaTime;
+        if(this.enemyMoveEnabled && this.moveStartTime >= MOVE_INTERVAL) {
+
+            //敵を移動させる
+            this.EnemyMove(this.moveDirection);
+
+            //一度速度を設定したら、以後は再設定しない（Y軸プラス方向へ進み続ける）
+            this.enemyMoveEnabled = false;
 
         }
 
@@ -117,6 +122,20 @@ public class EnemyT4Controller : MonoBehaviour {
             enemyPos
             , ENEMY_LEVEL
             , EBulletGenerator.EBulletType.straight);
+
+    }
+
+    //敵の進行方向へ移動する
+    private void EnemyMove(Vector2 inDirection) {
+
+        //敵Rigidbody取得
+        Rigidbody2D enemyBody = this.GetComponent<Rigidbody2D>();
+
+        //進行方向（direction）とスピードを設定
+        enemyBody.linearVelocity = inDirection * ENEMY_MOVE_SPEED;
+
+        //進行方向へ力を加え、物理的に移動を発生させる
+        enemyBody.AddForce(inDirection);
 
     }
 

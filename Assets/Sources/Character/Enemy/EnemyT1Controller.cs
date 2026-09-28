@@ -6,8 +6,11 @@ public class EnemyT1Controller : MonoBehaviour {
     private const int ENEMY_SCORE = 10;
 
     //敵弾発射の間隔
-    private const float SHOOT_INTERVAL = 2.0f;
+    private const float SHOOT_INTERVAL = 1.0f;
     private float shootTime;
+
+    //弾発射済み判定フラグ
+    private bool shooted = false;
 
     //敵のレベル設定
     private const int ENEMY_LEVEL = 5;
@@ -20,8 +23,7 @@ public class EnemyT1Controller : MonoBehaviour {
     private const float ENEMY_MOVE_SPEED = 3.0f;
 
     //敵の移動方向
-    private const float ENEMY_MOVE_ANGLE_X = 1.0f;
-    //private const float ENEMY_MOVE_ANGLE_Y = 0.5f;
+    private static readonly Vector2 MOVE_DIRECTION = Vector2.left;
 
     //敵移動済み判定フラグ
     private bool enemyMoveEnabled = true;
@@ -32,6 +34,9 @@ public class EnemyT1Controller : MonoBehaviour {
     private const float ENEMY_DESTROY_POS_UP = 6.0f;
     private const float ENEMY_DESTROY_POS_DOWN = -6.0f;
 
+    //出現時に決定した進行方向。
+    private Vector2 moveDirection;
+
     //敵弾生成オブジェクト
     private GameObject eBulletObj;
 
@@ -41,6 +46,9 @@ public class EnemyT1Controller : MonoBehaviour {
         //敵弾生成オブジェクト取得
         this.eBulletObj = GameObject.Find("E_Bullet_Generator");
 
+        //敵の進行方向を設定
+        this.moveDirection = MOVE_DIRECTION;
+
     }
 
     // Update is called once per frame
@@ -48,17 +56,13 @@ public class EnemyT1Controller : MonoBehaviour {
 
         //敵弾発射
         this.shootTime += Time.deltaTime;
-        if(this.shootTime >= SHOOT_INTERVAL) {
+        if(this.shootTime >= SHOOT_INTERVAL && !this.shooted) {
 
             //敵の位置を基に、敵弾を発射
-            Vector2 enemyPos = this.gameObject.transform.position;
-            this.eBulletObj.GetComponent<EBulletGenerator>().EBulletGenerate(
-                enemyPos
-                ,ENEMY_LEVEL
-                ,EBulletGenerator.EBulletType.straight);
+            this.ShootBullet();
 
-            //発射間隔をリセット
-            this.shootTime = 0f;
+            //発射済みにする
+            this.shooted = true;
 
         }
 
@@ -69,23 +73,7 @@ public class EnemyT1Controller : MonoBehaviour {
             //Debug.Log("collision = " + this.gameObject.name);
 
             //敵を移動させる
-            //敵の移動方向を求める
-            Vector2 startPos = this.gameObject.transform.position;
-            Vector2 endPos = this.gameObject.transform.position;
-            Vector2 movePos;
-
-            endPos.x -= ENEMY_MOVE_ANGLE_X;
-            movePos = endPos - startPos;
-
-            //敵Rigidbody取得
-            Rigidbody2D enemyBody;
-            enemyBody = this.GetComponent<Rigidbody2D>();
-
-            //敵の移動方向（敵の移動方向.normalized）とスピードを設定
-            enemyBody.linearVelocity = movePos.normalized * ENEMY_MOVE_SPEED;
-
-            //敵に力を加え、移動
-            enemyBody.AddForce(movePos.normalized);
+            this.EnemyMove(this.moveDirection);
 
             //移動判定フラグをoffにする
             this.enemyMoveEnabled = false;
@@ -101,6 +89,32 @@ public class EnemyT1Controller : MonoBehaviour {
             Destroy(this.gameObject);
 
         }
+    }
+
+    //敵弾を発射
+    private void ShootBullet() {
+
+        //敵の位置を基に、敵弾を発射
+        Vector2 enemyPos = this.gameObject.transform.position;
+        this.eBulletObj.GetComponent<EBulletGenerator>().EBulletGenerate(
+            enemyPos
+            , ENEMY_LEVEL
+            , EBulletGenerator.EBulletType.straight);
+
+    }
+
+    //敵の進行方向へ移動する
+    private void EnemyMove(Vector2 inDirection) {
+
+        //敵Rigidbody取得
+        Rigidbody2D enemyBody = this.GetComponent<Rigidbody2D>();
+
+        //進行方向（direction）とスピードを設定
+        enemyBody.linearVelocity = inDirection * ENEMY_MOVE_SPEED;
+
+        //進行方向へ力を加え、物理的に移動を発生させる
+        enemyBody.AddForce(inDirection);
+
     }
 
     //自弾に当たったら、点数を加算して自分自身を消す
