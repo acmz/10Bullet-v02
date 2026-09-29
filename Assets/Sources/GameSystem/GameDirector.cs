@@ -70,6 +70,9 @@ public class GameDirector : MonoBehaviour {
         }
     }
 
+    //Wave終了時のウェイトタイム
+    private const float WAVE_END_WAIT_TIME = 3.0f;
+
     //コルーチン（処理停止）制御フラグ
     private bool isSleeping = false;
 
@@ -148,8 +151,7 @@ public class GameDirector : MonoBehaviour {
 
         //残り時間が0になったら、全ての敵と敵弾を削除し、次のWaveへ。
         if(this.timeLeft <= 0f) {
-            this.DestroyEnemyAll();
-            this.isWaveInit = true;
+            _ = this.StartCoroutine("WaveEnd", WAVE_END_WAIT_TIME);
         }
 
     }
@@ -192,9 +194,18 @@ public class GameDirector : MonoBehaviour {
 
     }
 
+    //Wave終了
+    private IEnumerator WaveEnd(float inTime) {
+
+        this.DestroyEnemyAll();
+        yield return new WaitForSeconds(inTime);
+        this.isWaveInit = true;
+
+    }
+
     //敵と敵弾の全消去
     private void DestroyEnemyAll() {
-        Debug.Log("destroy object ");
+        //Debug.Log("destroy object ");
 
         //画面上に残っている敵を全て削除（タグ：Enemyに属するオブジェクト）
         foreach(GameObject enemy in GameObject.FindGameObjectsWithTag("Enemy")) {
