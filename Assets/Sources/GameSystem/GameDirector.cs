@@ -27,15 +27,6 @@ public class GameDirector : MonoBehaviour {
     //敵撃破数
     private int enemyDestroyNum;
 
-    //Wave数
-    private const int START_WAVE_NUM = 0;
-    private int waveNum = 0;
-    public int WaveNum {
-        get {
-            return this.waveNum;
-        }
-    }
-
     //残り時間
     private GameObject timeLeftUI;
     private const float LIMIT_TIME = 10.0f;
@@ -48,6 +39,29 @@ public class GameDirector : MonoBehaviour {
         }
     }
 
+    //ゲームオーバー
+    private GameObject gameOverUI;
+
+    //タイトル画面へ戻る
+    private GameObject returnTitleUI;
+
+    //ゲームオーバーコントロールフラグ
+    private bool isGameOver = false;
+
+    //Wave数表示
+    private GameObject waveUI;
+    private const int START_WAVE_NUM = 0;
+    private int waveNum = 0;
+    public int WaveNum {
+        get {
+            return this.waveNum;
+        }
+    }
+    private const string WAVE_NUM_MSG = "Wave ";
+
+    //Ready
+    private GameObject readyUI;
+    
     //Wave開始コントロールフラグ
     private bool isWaveInit = false;
     public bool IsWaveInit {
@@ -59,12 +73,6 @@ public class GameDirector : MonoBehaviour {
     //コルーチン（処理停止）制御フラグ
     private bool isSleeping = false;
 
-    //ゲームオーバー
-    private GameObject gameOverUI;
-
-    //ゲームオーバーコントロールフラグ
-    private bool isGameOver = false;
-
     //ゲームオーバー表示時間
     //private const float GAMEOVER_WAIT_TIME = 5.0f;
     //private float gameOverWaitTime = 0f;
@@ -72,9 +80,11 @@ public class GameDirector : MonoBehaviour {
     // Use this for initialization
     void Start() {
 
-        //ゲームオーバー非表示
+        //ゲームオーバー、タイトルへ戻る非表示
         this.gameOverUI = GameObject.Find("GameOver");
         this.gameOverUI.SetActive(false);
+        this.returnTitleUI = GameObject.Find("ReturnTitle");
+        this.returnTitleUI.SetActive(false);
 
         //残弾数UI取得、初期化
         this.pBulletNum = GameObject.Find("P_Bullet_Num");
@@ -90,6 +100,10 @@ public class GameDirector : MonoBehaviour {
 
         //Wave数初期化
         this.WaveNumInit();
+
+        //Wave数、ReadyUIオブジェクト取得
+        this.waveUI = GameObject.Find("Wave");
+        this.readyUI = GameObject.Find("Ready");
 
         //Game開始
         this.isWaveInit = true;
@@ -109,6 +123,7 @@ public class GameDirector : MonoBehaviour {
 
             //Debug.Log("Game Over");
             this.gameOverUI.SetActive(true);
+            this.returnTitleUI.SetActive(this);
 
             //スコア表示
             UnityroomApiClient.Instance.SendScore(1, this.score, ScoreboardWriteMode.HighScoreDesc);
@@ -131,8 +146,9 @@ public class GameDirector : MonoBehaviour {
         //残り時間を減らす
         this.TimeLeftMinus();
 
-        //残り時間が0になったら、次のWaveへ。
+        //残り時間が0になったら、全ての敵と敵弾を削除し、次のWaveへ。
         if(this.timeLeft <= 0f) {
+            this.DestroyEnemyAll();
             this.isWaveInit = true;
         }
 
@@ -148,6 +164,14 @@ public class GameDirector : MonoBehaviour {
 
         this.isSleeping = true;
 
+        //Wave数設定
+        this.NextWave();
+
+        //Wave数、Ready表示
+        this.waveUI.SetActive(true);
+        this.waveView(this.waveNum);
+        this.readyUI.SetActive(true);
+
         //残弾数回復
         while(this.pBulletStock < P_BULLET_MAX) {
 
@@ -160,13 +184,27 @@ public class GameDirector : MonoBehaviour {
         yield return new WaitForSeconds(inTime);
         this.TimeReset();
 
-        //Wave数設定
-        this.NextWave();
-
         //Wave開始
+        this.waveUI.SetActive(false);
+        this.readyUI.SetActive(false);
         this.isWaveInit = false;
-
         this.isSleeping = false;
+
+    }
+
+    //敵と敵弾の全消去
+    private void DestroyEnemyAll() {
+        Debug.Log("destroy object ");
+
+        //画面上に残っている敵を全て削除（タグ：Enemyに属するオブジェクト）
+        foreach(GameObject enemy in GameObject.FindGameObjectsWithTag("Enemy")) {
+            Destroy(enemy);
+        }
+
+        //画面上に残っている敵弾を全て削除（タグ：EnemyBulletに属するオブジェクト）
+        foreach(GameObject eBullet in GameObject.FindGameObjectsWithTag("EnemyBullet")) {
+            Destroy(eBullet);
+        }
 
     }
 
@@ -298,4 +336,11 @@ public class GameDirector : MonoBehaviour {
 
     }
 
+    //Wave数表示
+    private void waveView(int inWaveNum) {
+
+        //残弾数表示を更新
+        this.waveUI.GetComponent<Text>().text = WAVE_NUM_MSG + inWaveNum;
+
+    }
 }
