@@ -39,6 +39,9 @@ public class EnemyT5Controller : MonoBehaviour {
     //出現時に決定した進行方向。
     private Vector2 moveDirection;
 
+    //敵の死亡時のエフェクト
+    public GameObject destroyEffect;
+
     //敵弾生成オブジェクト
     private GameObject eBulletObj;
 
@@ -135,6 +138,11 @@ public class EnemyT5Controller : MonoBehaviour {
 
             //自分自身を消す
             Destroy(this.gameObject);
+
+            //死亡時のエフェクトを表示
+            _ = Instantiate(this.destroyEffect,
+                this.transform.position,
+                Quaternion.identity);
 
         }
 

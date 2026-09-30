@@ -52,6 +52,9 @@ public class EnemyT6Controller : MonoBehaviour {
     //出現時に決定した進行方向。移動だけでなく、弾を発射する方向にもそのまま使う
     private Vector2 moveDirection;
 
+    //敵の死亡時のエフェクト
+    public GameObject destroyEffect;
+
     // Use this for initialization
     void Start() {
 
@@ -175,6 +178,11 @@ public class EnemyT6Controller : MonoBehaviour {
 
             //自分自身（敵）のGameObjectを破棄する
             Destroy(this.gameObject);
+
+            //死亡時のエフェクトを表示
+            _ = Instantiate(this.destroyEffect,
+                this.transform.position,
+                Quaternion.identity);
 
         }
 

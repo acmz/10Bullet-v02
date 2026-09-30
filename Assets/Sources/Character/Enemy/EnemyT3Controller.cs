@@ -53,6 +53,9 @@ public class EnemyT3Controller : MonoBehaviour {
     //扇状弾を生成するオブジェクトへの参照
     private GameObject eBulletObj;
 
+    //敵の死亡時のエフェクト
+    public GameObject destroyEffect;
+
     // Use this for initialization
     void Start() {
 
@@ -180,6 +183,11 @@ public class EnemyT3Controller : MonoBehaviour {
 
             //自分自身（敵）のGameObjectを破棄する
             Destroy(this.gameObject);
+
+            //死亡時のエフェクトを表示
+            _ = Instantiate(this.destroyEffect,
+                this.transform.position,
+                Quaternion.identity);
 
         }
 

@@ -40,6 +40,9 @@ public class EnemyT1Controller : MonoBehaviour {
     //敵弾生成オブジェクト
     private GameObject eBulletObj;
 
+    //敵の死亡時のエフェクト
+    public GameObject destroyEffect;
+
     // Use this for initialization
     void Start() {
 
@@ -134,6 +137,11 @@ public class EnemyT1Controller : MonoBehaviour {
 
             //自分自身を消す
             Destroy(this.gameObject);
+
+            //死亡時のエフェクトを表示
+            _ = Instantiate(this.destroyEffect,
+                this.transform.position,
+                Quaternion.identity);
 
         }
 

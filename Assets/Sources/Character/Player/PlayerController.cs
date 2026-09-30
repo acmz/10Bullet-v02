@@ -15,6 +15,9 @@ public class PlayerController : MonoBehaviour {
     private const float WINDOW_LIMIT_TOP = 4.6f;
     private const float WINDOW_LIMIT_BOTTOM = -3.6f;
 
+    //自機の死亡時のエフェクト
+    public GameObject destroyEffect;
+
     // Use this for initialization
     void Start() {
 
@@ -72,6 +75,11 @@ public class PlayerController : MonoBehaviour {
 
             //自分自身を消す
             Destroy(this.gameObject);
+
+            //死亡時のエフェクトを表示
+            _ = Instantiate(this.destroyEffect,
+                this.transform.position,
+                Quaternion.identity);
 
         }
 

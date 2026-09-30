@@ -185,3 +185,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbe9c5160ba8ed64abffda983a7adb16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyT5Controller
+  destroyEffect: {fileID: 1015692928537266530, guid: ee608b324a0839949b6218edccb1ea6f, type: 3}
