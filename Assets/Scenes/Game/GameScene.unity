@@ -305,11 +305,11 @@ AudioSource:
   m_GameObject: {fileID: 116396413}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: -3124392459329490520, guid: 3c6d1e3e0503a05489c3311eb6d7aa32, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 0
-  m_Volume: 0.5
+  m_Volume: 1
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -1356,6 +1356,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2801f99908093db48bf27e255841ea4d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerObject: {fileID: 0}
 --- !u!4 &903179486
 Transform:
   m_ObjectHideFlags: 0
@@ -1691,11 +1692,11 @@ AudioSource:
   m_GameObject: {fileID: 1298577975}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: -7253785384704102158, guid: 3c6d1e3e0503a05489c3311eb6d7aa32, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 12d5e8655172a7f438d0ad8728527793, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0.5
+  m_Volume: 1
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -2244,7 +2245,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Press Key [Esc] To Return Title
+  m_Text: Press Key [Esc] To Game Reset
 --- !u!222 &1960960356
 CanvasRenderer:
   m_ObjectHideFlags: 0

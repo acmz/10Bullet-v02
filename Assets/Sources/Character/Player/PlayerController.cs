@@ -47,20 +47,24 @@ public class PlayerController : MonoBehaviour {
         }
 
         //左右移動
-        if(keyboard.leftArrowKey.isPressed && this.transform.position.x > WINDOW_LIMIT_LEFT) {
+        if((keyboard.leftArrowKey.isPressed || keyboard.aKey.isPressed)
+            && this.transform.position.x > WINDOW_LIMIT_LEFT) {
             keyLfRi = -1;
         }
 
-        if(keyboard.rightArrowKey.isPressed && this.transform.position.x < WINDOW_LIMIT_RIGHT) {
+        if((keyboard.rightArrowKey.isPressed || keyboard.dKey.isPressed)
+            && this.transform.position.x < WINDOW_LIMIT_RIGHT) {
             keyLfRi = 1;
         }
 
         //上下移動
-        if(keyboard.upArrowKey.isPressed && this.transform.position.y < WINDOW_LIMIT_TOP) {
+        if((keyboard.upArrowKey.isPressed || keyboard.wKey.isPressed)
+            && this.transform.position.y < WINDOW_LIMIT_TOP) {
             keyUpDw = 1;
         }
 
-        if(keyboard.downArrowKey.isPressed && this.transform.position.y > WINDOW_LIMIT_BOTTOM) {
+        if((keyboard.downArrowKey.isPressed || keyboard.sKey.isPressed)
+            && this.transform.position.y > WINDOW_LIMIT_BOTTOM) {
             keyUpDw = -1;
         }
 

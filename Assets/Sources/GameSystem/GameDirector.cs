@@ -1,5 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using unityroom.Api;
 
@@ -116,13 +118,27 @@ public class GameDirector : MonoBehaviour {
     // Update is called once per frame
     void Update() {
 
+
+        //キーボードの状態取得
+        Keyboard keyboard = Keyboard.current;
+
+        //キーボードが接続されていない場合、何もしない
+        if(keyboard == null) {
+            return;
+        }
+
+        //ゲームオーバー中にESCキーが押されたら、シーンをリセットする
+        if(this.isGameOver && keyboard.escapeKey.wasPressedThisFrame) {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+
         //ゲームオーバー中なら何もしない
         if(this.isGameOver) {
             return;
         }
 
         //自機が消えたらゲームオーバー
-        if(GameObject.Find("Player") == null) {
+        if(GameObject.Find("Player") == null && !this.isGameOver) {
 
             //Debug.Log("Game Over");
             this.gameOverUI.SetActive(true);
