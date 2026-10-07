@@ -16,9 +16,10 @@ public class PBulletController : MonoBehaviour {
     private const float P_BULLET_DESTROY_POS_RIGHT = 10.0f;
     private const float P_BULLET_DESTROY_POS_UP = 6.0f;
     private const float P_BULLET_DESTROY_POS_DOWN = -6.0f;
+
     // Use this for initialization
     void Start() {
-        
+
     }
 
     // Update is called once per frame

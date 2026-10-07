@@ -7,16 +7,26 @@ public class PBulletGenerator : MonoBehaviour {
     private const float P_BULLET_POS_SET = 1.1f;
 
     //GameDirectorオブジェクト
-    GameObject gameDirectorObj;
+    private GameObject gameDirectorObj;
 
     //Playerオブジェクト
-    GameObject player;
+    private GameObject player;
+
+    //弾発射時のSE
+    private GameObject shotSE;
+
 
     // Use this for initialization
     void Start() {
 
         //GameDirectorと連携
         this.gameDirectorObj = GameObject.Find("GameDirector");
+
+        //弾発射時のSEオブジェクト取得
+        this.shotSE = GameObject.Find("SEDirector");
+
+        //自機オブジェクトを取得
+        this.player = GameObject.Find("Player");
 
     }
 
@@ -55,7 +65,7 @@ public class PBulletGenerator : MonoBehaviour {
 
                 //自機の位置を基に、自弾の発射位置を設定
                 if(this.player == null) {
-                    this.player = GameObject.Find("Player");
+                    return;
                 }
                 Vector2 playerPos = this.player.transform.position;
                 Vector2 pBulletVector2 = new(playerPos.x + P_BULLET_POS_SET, playerPos.y);
@@ -65,6 +75,9 @@ public class PBulletGenerator : MonoBehaviour {
                                                  pBulletVector2,
                                                  Quaternion.identity);
                 pBullet.GetComponent<PBulletController>().PBulletShoot(playerPos);
+
+                //弾発射時のSEを鳴らす
+                this.shotSE.GetComponent<SEDirector>().PlayShotSE();
 
                 //弾を発射したことをDirectorに伝え、撃破数を初期化する
                 //仕様変更 連射可能にしたので、撃破数初期化は画面から全ての弾が消えたタイミングで行う

@@ -18,10 +18,16 @@ public class PlayerController : MonoBehaviour {
     //自機の死亡時のエフェクト
     public GameObject destroyEffect;
 
+    //自機の死亡時のSE
+    private GameObject destroySE;
+
     // Use this for initialization
     void Start() {
 
         playerBody = GetComponent<Rigidbody2D>();
+
+        //死亡時のSEオブジェクト取得
+        this.destroySE = GameObject.Find("SEDirector");
 
 	}
 
@@ -80,6 +86,9 @@ public class PlayerController : MonoBehaviour {
             _ = Instantiate(this.destroyEffect,
                 this.transform.position,
                 Quaternion.identity);
+
+            //死亡時のSEを鳴らす
+            this.destroySE.GetComponent<SEDirector>().PlayPlayerDamageSE();
 
         }
 

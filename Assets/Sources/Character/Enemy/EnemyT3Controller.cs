@@ -56,11 +56,17 @@ public class EnemyT3Controller : MonoBehaviour {
     //敵の死亡時のエフェクト
     public GameObject destroyEffect;
 
+    //敵の死亡時のSE
+    private GameObject destroySE;
+
     // Use this for initialization
     void Start() {
 
         //シーン上の"E_Bullet_Generator"という名前のオブジェクトを検索して取得する
         this.eBulletObj = GameObject.Find("E_Bullet_Generator");
+
+        //敵死亡時のSEオブジェクト取得
+        this.destroySE = GameObject.Find("SEDirector");
 
         //敵の進行方向を設定
         this.moveDirection = MOVE_DIRECTION;
@@ -188,6 +194,9 @@ public class EnemyT3Controller : MonoBehaviour {
             _ = Instantiate(this.destroyEffect,
                 this.transform.position,
                 Quaternion.identity);
+
+            //死亡時のSEを再生
+            this.destroySE.GetComponent<SEDirector>().PlayEnemyDamageSE();
 
         }
 
