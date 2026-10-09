@@ -27,6 +27,10 @@ public class EnemyT5Controller : MonoBehaviour {
     //敵の移動方向
     private static readonly Vector2 MOVE_DIRECTION = Vector2.right;
 
+    //スプライトの頂点はY軸プラス方向（Atan2の角度でいう90度の位置）を向いているため、
+    //進行方向の角度からこの分だけ引いて補正する
+    private const float SPRITE_ANGLE_OFFSET = 90.0f;
+
     //敵移動済み判定フラグ
     private bool enemyMoveEnabled = true;
 
@@ -59,6 +63,26 @@ public class EnemyT5Controller : MonoBehaviour {
 
         //敵の進行方向を設定
         this.moveDirection = MOVE_DIRECTION;
+
+        //進行方向へスプライトの向きを設定する
+        this.SetSpriteDirection(this.moveDirection);
+
+    }
+
+    //引数の方向へスプライトの向き（Z軸回転）を更新する
+    private void SetSpriteDirection(Vector2 inDirection) {
+
+        //方向ベクトルの長さが0の場合（自機と全く同じ座標に出現した場合）は正規化できないため、既定方向を使う
+        Vector2 direction = (inDirection.sqrMagnitude > 0f) ? inDirection.normalized : MOVE_DIRECTION;
+
+        //進行方向ベクトルから角度を求める（Atan2はX軸プラス方向を0度とするラジアン角を返す）
+        float angleRad = Mathf.Atan2(direction.y, direction.x);
+
+        //ラジアンを度数法に変換し、スプライトの向き（頂点が90度＝真上）とのずれを補正する
+        float angleDeg = (angleRad * Mathf.Rad2Deg) - SPRITE_ANGLE_OFFSET;
+
+        //Z軸周りの回転として、スプライトの頂点が進行方向を向くように設定する
+        this.gameObject.transform.rotation = Quaternion.Euler(0f, 0f, angleDeg);
 
     }
 

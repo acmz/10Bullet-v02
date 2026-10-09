@@ -22,11 +22,12 @@ public class EnemyT4Controller : MonoBehaviour {
 
     //進入方向ベクトルを求めるためのY方向の変化量
     //（プラス方向を指定することで、Y軸マイナス側からプラス側＝画面下から上へ進む）
-    //private const float ENEMY_MOVE_ANGLE_X = 1.0f;
-    //private const float ENEMY_MOVE_ANGLE_Y_UP = 1.0f;
-    //private const float ENEMY_MOVE_ANGLE_Y_DOWN = -1.0f;
     private static readonly Vector2 MOVE_DIRECTION_UP = Vector2.up;
     private static readonly Vector2 MOVE_DIRECTION_DOWN = Vector2.down;
+
+    //スプライトの頂点はY軸プラス方向（Atan2の角度でいう90度の位置）を向いているため、
+    //進行方向の角度からこの分だけ引いて補正する
+    private const float SPRITE_ANGLE_OFFSET = 90.0f;
 
     //Y軸の中央座標
     private static float DISPLAY_CENTER_POS = 0.5f;
@@ -67,6 +68,9 @@ public class EnemyT4Controller : MonoBehaviour {
         //敵の進行方向を設定
         this.moveDirection = this.SetMoveDirection(this.gameObject.transform.position);
 
+        //進行方向へスプライトの向きを設定する
+        this.SetSpriteDirection(this.moveDirection);
+
     }
 
     //敵の進行方向を設定する
@@ -79,6 +83,23 @@ public class EnemyT4Controller : MonoBehaviour {
             return MOVE_DIRECTION_UP;
         }
         return MOVE_DIRECTION_DOWN;
+
+    }
+
+    //引数の方向へスプライトの向き（Z軸回転）を更新する
+    private void SetSpriteDirection(Vector2 inDirection) {
+
+        //方向ベクトルの長さが0の場合（自機と全く同じ座標に出現した場合）は正規化できないため、既定方向を使う
+        Vector2 direction = (inDirection.sqrMagnitude > 0f) ? inDirection.normalized : MOVE_DIRECTION_UP;
+
+        //進行方向ベクトルから角度を求める（Atan2はX軸プラス方向を0度とするラジアン角を返す）
+        float angleRad = Mathf.Atan2(direction.y, direction.x);
+
+        //ラジアンを度数法に変換し、スプライトの向き（頂点が90度＝真上）とのずれを補正する
+        float angleDeg = (angleRad * Mathf.Rad2Deg) - SPRITE_ANGLE_OFFSET;
+
+        //Z軸周りの回転として、スプライトの頂点が進行方向を向くように設定する
+        this.gameObject.transform.rotation = Quaternion.Euler(0f, 0f, angleDeg);
 
     }
 
