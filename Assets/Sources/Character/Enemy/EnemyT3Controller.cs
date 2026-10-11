@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 //敵タイプT3：画面内の定位置で停止し、扇状弾をばら撒く設置型の敵
-//T1（直進弾・低スコア）、T2（ホーミング弾・高スコア）に続く第3の敵タイプ
+//T1（直進・直進弾）、T2（定位置・ホーミング弾）に続く第3の敵タイプ
 public class EnemyT3Controller : MonoBehaviour {
 
     //撃破時に加算する点数
@@ -11,9 +11,6 @@ public class EnemyT3Controller : MonoBehaviour {
     //敵弾発射の間隔（秒）
     private const float SHOOT_INTERVAL = 3.0f;
     private float shootTime;
-
-    //敵のレベル設定
-    private const int ENEMY_LEVEL = 6;
 
     //生成から移動開始するまでの間隔（秒）。
     private const float MOVE_INTERVAL = 0.0f;
@@ -63,6 +60,9 @@ public class EnemyT3Controller : MonoBehaviour {
     //敵の死亡時のSE
     private GameObject destroySE;
 
+    //GameDirector
+    private GameObject gameDirector;
+
     // Use this for initialization
     void Start() {
 
@@ -71,6 +71,9 @@ public class EnemyT3Controller : MonoBehaviour {
 
         //敵死亡時のSEオブジェクト取得
         this.destroySE = GameObject.Find("SEDirector");
+
+        //Directorと連携
+        this.gameDirector = GameObject.Find("GameDirector");
 
         //敵の進行方向を設定
         this.moveDirection = MOVE_DIRECTION;
@@ -106,7 +109,8 @@ public class EnemyT3Controller : MonoBehaviour {
         if(this.shootTime >= SHOOT_INTERVAL) {
 
             //敵の位置を基に、敵弾を発射
-            this.ShootBullet();
+            //敵レベルはWave数とイコール
+            this.ShootBullet(this.gameDirector.GetComponent<GameDirector>().WaveNum);
 
             //発射間隔カウンターをリセットする
             this.shootTime = 0f;
@@ -156,13 +160,13 @@ public class EnemyT3Controller : MonoBehaviour {
     }
 
     //敵弾を発射
-    private void ShootBullet() {
+    private void ShootBullet(int inEnemyLevel) {
 
         //敵の位置を基に、敵弾を発射
         Vector2 enemyPos = this.gameObject.transform.position;
         this.eBulletObj.GetComponent<EBulletGenerator>().EBulletGenerate(
             enemyPos
-            , ENEMY_LEVEL
+            , inEnemyLevel
             , EBulletGenerator.EBulletType.fan);
 
     }
@@ -204,12 +208,9 @@ public class EnemyT3Controller : MonoBehaviour {
         //衝突した相手が自弾（P_Bullet_Prefabの複製）かどうかを名前で判定する
         if(collision.gameObject.name == "P_Bullet_Prefab(Clone)") {
 
-            //スコアや撃破数を管理しているGameDirectorオブジェクトを検索して取得する
-            GameObject gameDirectorObj = GameObject.Find("GameDirector");
-
             //倒されたこと、加算する点数をDirectorに伝える
-            gameDirectorObj.GetComponent<GameDirector>().EnemyDestroyNumPlus();
-            gameDirectorObj.GetComponent<GameDirector>().ScorePlus(ENEMY_SCORE);
+            this.gameDirector.GetComponent<GameDirector>().EnemyDestroyNumPlus();
+            this.gameDirector.GetComponent<GameDirector>().ScorePlus(ENEMY_SCORE);
 
             //自分自身（敵）のGameObjectを破棄する
             Destroy(this.gameObject);

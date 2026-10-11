@@ -23,7 +23,7 @@ GameObject:
   - component: {fileID: -4948324275620681003}
   m_Layer: 0
   m_Name: Enemy_T3_Prefab
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -629,4 +629,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25f31f29de6954543b78d1c9b85d7c3f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyT3Controller
-  destroyEffect: {fileID: 2772718296009954497}
+  destroyEffect: {fileID: 1015692928537266530, guid: ee608b324a0839949b6218edccb1ea6f, type: 3}

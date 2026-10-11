@@ -63,7 +63,10 @@ public class GameDirector : MonoBehaviour {
 
     //Ready
     private GameObject readyUI;
-    
+
+    //Clear
+    private GameObject completeUI;
+
     //Wave開始コントロールフラグ
     private bool isWaveInit = false;
     public bool IsWaveInit {
@@ -75,15 +78,12 @@ public class GameDirector : MonoBehaviour {
     //Wave終了時のウェイトタイム
     private const float WAVE_END_WAIT_TIME = 3.0f;
 
-    //コルーチン（処理停止）制御フラグ
-    private bool isSleeping = false;
-
     //ゲームオーバー表示時間
     //private const float GAMEOVER_WAIT_TIME = 5.0f;
     //private float gameOverWaitTime = 0f;
 
     // Use this for initialization
-    void Start() {
+    IEnumerator Start() {
 
         //ゲームオーバー、タイトルへ戻る非表示
         this.gameOverUI = GameObject.Find("GameOver");
@@ -106,81 +106,76 @@ public class GameDirector : MonoBehaviour {
         //Wave数初期化
         this.WaveNumInit();
 
-        //Wave数、ReadyUIオブジェクト取得
+        //Wave数、ReadyUI、ClearUIオブジェクト取得
         this.waveUI = GameObject.Find("Wave");
         this.readyUI = GameObject.Find("Ready");
+        this.completeUI = GameObject.Find("Complete");
+        this.completeUI.SetActive(false);
 
         //Game開始
         this.isWaveInit = true;
+
+        while(true) {
+
+            //キーボードの状態取得
+            Keyboard keyboard = Keyboard.current;
+
+            //キーボードが接続されていない場合、何もしない
+            if(keyboard == null) {
+                continue;
+            }
+
+            //ゲームオーバー中にESCキーが押されたら、シーンをリセットする
+            if(this.isGameOver && keyboard.escapeKey.wasPressedThisFrame) {
+                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            }
+
+            //ゲームオーバー中なら何もしない
+            if(this.isGameOver) {
+                continue;
+            }
+
+            //自機が消えたらゲームオーバー
+            if(GameObject.Find("Player") == null && !this.isGameOver) {
+
+                //Debug.Log("Game Over");
+                this.gameOverUI.SetActive(true);
+                this.returnTitleUI.SetActive(this);
+
+                //スコア表示
+                UnityroomApiClient.Instance.SendScore(1, this.score, ScoreboardWriteMode.HighScoreDesc);
+
+                this.isGameOver = true;
+                continue;
+
+            }
+
+            //Wave開始前
+            //残弾数と残り時間のリセット、Wave数の設定
+            if(this.isWaveInit) {
+                yield return this.InitPlayerStatus(0.5f);
+            }
+
+            //Wave開始後
+            //残り時間を減らす
+            yield return this.TimeLeftMinus();
+
+            //残り時間が0になったら、全ての敵と敵弾を削除し、次のWaveへ。
+            if(this.timeLeft <= 0f) {
+                yield return this.WaveEnd(WAVE_END_WAIT_TIME);
+            }
+
+        }
 
     }
 
     // Update is called once per frame
     void Update() {
 
-
-        //キーボードの状態取得
-        Keyboard keyboard = Keyboard.current;
-
-        //キーボードが接続されていない場合、何もしない
-        if(keyboard == null) {
-            return;
-        }
-
-        //ゲームオーバー中にESCキーが押されたら、シーンをリセットする
-        if(this.isGameOver && keyboard.escapeKey.wasPressedThisFrame) {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-        }
-
-        //ゲームオーバー中なら何もしない
-        if(this.isGameOver) {
-            return;
-        }
-
-        //自機が消えたらゲームオーバー
-        if(GameObject.Find("Player") == null && !this.isGameOver) {
-
-            //Debug.Log("Game Over");
-            this.gameOverUI.SetActive(true);
-            this.returnTitleUI.SetActive(this);
-
-            //スコア表示
-            UnityroomApiClient.Instance.SendScore(1, this.score, ScoreboardWriteMode.HighScoreDesc);
-
-            this.isGameOver = true;
-            return;
-        
-        }
-
-        //Wave開始前
-        //残弾数と残り時間のリセット、Wave数の設定
-        if(this.isWaveInit) {
-
-            _ = this.StartCoroutine("InitPlayerStatus", 0.5f);
-            return;
-
-        }
-
-        //Wave開始後
-        //残り時間を減らす
-        this.TimeLeftMinus();
-
-        //残り時間が0になったら、全ての敵と敵弾を削除し、次のWaveへ。
-        if(this.timeLeft <= 0f) {
-            _ = this.StartCoroutine("WaveEnd", WAVE_END_WAIT_TIME);
-        }
-
     }
 
     //プレイヤーステータス初期化（コルーチン）
     private IEnumerator InitPlayerStatus(float inTime) {
-
-        //初期化処理中に再度呼ばれたら、何もせずに抜ける
-        if(this.isSleeping) {
-            yield break;
-        }
-
-        this.isSleeping = true;
 
         //Wave数設定
         this.NextWave();
@@ -190,31 +185,43 @@ public class GameDirector : MonoBehaviour {
         this.waveView(this.waveNum);
         this.readyUI.SetActive(true);
 
+        WaitForSeconds wait = new WaitForSeconds(inTime);
+
         //残弾数回復
         while(this.pBulletStock < P_BULLET_MAX) {
 
-            yield return new WaitForSeconds(inTime);
+            yield return wait;
             this.PBulletNumPlus();
 
         }
 
         //残り時間初期化
-        yield return new WaitForSeconds(inTime);
+        yield return wait;
         this.TimeReset();
 
         //Wave開始
         this.waveUI.SetActive(false);
         this.readyUI.SetActive(false);
         this.isWaveInit = false;
-        this.isSleeping = false;
 
     }
 
     //Wave終了
     private IEnumerator WaveEnd(float inTime) {
 
+        //画面上に残っている敵と敵弾をすべてクリアする
         this.DestroyEnemyAll();
-        yield return new WaitForSeconds(inTime);
+
+        //Complete表示
+        this.waveUI.SetActive(true);
+        this.waveView(this.waveNum);
+        this.completeUI.SetActive(true);
+
+        WaitForSeconds wait = new WaitForSeconds(inTime);
+        yield return wait;
+
+        //this.waveUI.SetActive(false);
+        this.completeUI.SetActive(false);
         this.isWaveInit = true;
 
     }
@@ -236,7 +243,7 @@ public class GameDirector : MonoBehaviour {
     }
 
     //残弾数増加
-    public void PBulletNumPlus() {
+    private void PBulletNumPlus() {
 
         //残弾数を回復
         this.pBulletStock++;
@@ -280,7 +287,7 @@ public class GameDirector : MonoBehaviour {
     }
 
     //スコア初期化
-    public void ScoreReset() {
+    private void ScoreReset() {
 
         //スコア初期化
         this.score = 0f;
@@ -310,7 +317,9 @@ public class GameDirector : MonoBehaviour {
     }
 
     //残り時間初期化
-    public void TimeReset() {
+    private void TimeReset() {
+
+        //Debug.Log("TimeReset");
 
         //残り時間初期化
         this.timeLeft = LIMIT_TIME;
@@ -321,12 +330,9 @@ public class GameDirector : MonoBehaviour {
     }
 
     //残り時間減算
-    public void TimeLeftMinus() {
+    private IEnumerator TimeLeftMinus() {
 
-        //残り時間が0の場合、何もしない。
-        if(this.timeLeft == 0f) {
-            return;
-        }
+        //Debug.Log("TimeLeftMinus");
 
         //残り時間減算
         this.timeLeft -= Time.deltaTime;
@@ -338,6 +344,9 @@ public class GameDirector : MonoBehaviour {
 
         //表示更新
         this.TimeLeftView(this.timeLeft);
+
+        //1フレーム待機する
+        yield return null;
 
     }
 
@@ -357,7 +366,7 @@ public class GameDirector : MonoBehaviour {
     }
 
     //Wave数更新
-    public void NextWave() {
+    private void NextWave() {
 
         this.waveNum++;
 

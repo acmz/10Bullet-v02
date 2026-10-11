@@ -5,7 +5,7 @@
 public class EnemyT5Controller : MonoBehaviour {
 
     //点数
-    private const int ENEMY_SCORE = 10;
+    private const int ENEMY_SCORE = 300;
 
     //敵弾発射の間隔
     private const float SHOOT_INTERVAL = 0.5f;
@@ -13,9 +13,6 @@ public class EnemyT5Controller : MonoBehaviour {
 
     //弾発射済み判定フラグ
     private bool shooted = false;
-
-    //敵のレベル設定
-    private const int ENEMY_LEVEL = 1;
 
     //生成から移動開始するまでの間隔
     private const float MOVE_INTERVAL = 0.0f;
@@ -52,6 +49,9 @@ public class EnemyT5Controller : MonoBehaviour {
     //敵の死亡時のSE
     private GameObject destroySE;
 
+    //GameDirector
+    private GameObject gameDirector;
+
     // Use this for initialization
     void Start() {
 
@@ -60,6 +60,9 @@ public class EnemyT5Controller : MonoBehaviour {
 
         //敵死亡時のSEオブジェクト取得
         this.destroySE = GameObject.Find("SEDirector");
+
+        //Directorと連携
+        this.gameDirector = GameObject.Find("GameDirector");
 
         //敵の進行方向を設定
         this.moveDirection = MOVE_DIRECTION;
@@ -94,7 +97,9 @@ public class EnemyT5Controller : MonoBehaviour {
         if(this.shootTime >= SHOOT_INTERVAL && !this.shooted) {
 
             //敵の位置を基に、敵弾を発射
-            this.ShootBullet();
+            //敵レベルはWave数とイコール
+            this.ShootBullet(this.gameDirector.GetComponent<GameDirector>().WaveNum);
+
             //弾発射済み
             this.shooted = true;
 
@@ -126,13 +131,13 @@ public class EnemyT5Controller : MonoBehaviour {
     }
 
     //敵の進行方向（moveDirection）へ弾を1発発射する
-    private void ShootBullet() {
+    private void ShootBullet(int inEnemyLevel) {
 
         //敵の位置を基に、敵弾を発射
         Vector2 enemyPos = this.gameObject.transform.position;
         this.eBulletObj.GetComponent<EBulletGenerator>().EBulletGenerate(
             enemyPos
-            , ENEMY_LEVEL
+            , inEnemyLevel
             , EBulletGenerator.EBulletType.straightOpposite);
 
     }
@@ -159,12 +164,9 @@ public class EnemyT5Controller : MonoBehaviour {
         //自弾に当たったら消滅
         if(collision.gameObject.name == "P_Bullet_Prefab(Clone)") {
 
-            //Directorと連携
-            GameObject gameDirectorObj = GameObject.Find("GameDirector");
-
             //倒されたこと、加算する点数をDirectorに伝える
-            gameDirectorObj.GetComponent<GameDirector>().EnemyDestroyNumPlus();
-            gameDirectorObj.GetComponent<GameDirector>().ScorePlus(ENEMY_SCORE);
+            this.gameDirector.GetComponent<GameDirector>().EnemyDestroyNumPlus();
+            this.gameDirector.GetComponent<GameDirector>().ScorePlus(ENEMY_SCORE);
 
             //自分自身を消す
             Destroy(this.gameObject);

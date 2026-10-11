@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Unity.VisualScripting;
+using UnityEngine;
 
 public class EBulletGenerator : MonoBehaviour
 {
@@ -14,8 +15,15 @@ public class EBulletGenerator : MonoBehaviour
     //レベル上昇のボーダーライン
     public enum EnemyLevel : int {
         lv1 = 1
-        , lv2 = 5
-        , lv3 = 7
+        , lv2 = 2
+        , lv3 = 3
+        , lv4 = 4
+        , lv5 = 5
+        , lv6 = 6
+        , lv7 = 7
+        , lv8 = 8
+        , lv9 = 9
+        , lv10 = 10
     }
 
     //敵弾の種類
@@ -86,6 +94,11 @@ public class EBulletGenerator : MonoBehaviour
     //敵弾（直進）
     private void EBulletStraight(Vector2 inBulletPos, int inEnemyLevel) {
 
+        //レベル3までは弾を撃たない
+        if(inEnemyLevel <= (int)EnemyLevel.lv3) {
+            return;
+        }
+
         //正面
         GameObject eBullet1 = Instantiate(this.eBulletPrefab, inBulletPos, Quaternion.identity);
         eBullet1.GetComponent<Renderer>().material.color = this.E_BULLET_STRIGHT_COLOR;
@@ -94,26 +107,25 @@ public class EBulletGenerator : MonoBehaviour
             EBulletController.EBulletDirectionX.left,
             EBulletController.EBulletDirectionY.left);
 
-        //レベル判定
-        int enemyLevelBorder = (int)EnemyLevel.lv2;
-        if(inEnemyLevel >= enemyLevelBorder) {
-
-            //上下
-            GameObject eBullet2 = Instantiate(this.eBulletPrefab, inBulletPos, Quaternion.identity);
-            eBullet2.GetComponent<Renderer>().material.color = this.E_BULLET_STRIGHT_COLOR;
-            eBullet2.GetComponent<EBulletController>().EBulletShoot(
-                inBulletPos,
-                EBulletController.EBulletDirectionX.left,
-                EBulletController.EBulletDirectionY.left);
-
-            GameObject eBullet3 = Instantiate(this.eBulletPrefab, inBulletPos, Quaternion.identity) as GameObject;
-            eBullet3.GetComponent<Renderer>().material.color = this.E_BULLET_STRIGHT_COLOR;
-            eBullet3.GetComponent<EBulletController>().EBulletShoot(
-                inBulletPos,
-                EBulletController.EBulletDirectionX.left,
-                EBulletController.EBulletDirectionY.left);
-
+        //レベル9以上で3Way弾になる
+        if(inEnemyLevel <= (int)EnemyLevel.lv9) {
+            return;
         }
+
+        //上下
+        GameObject eBullet2 = Instantiate(this.eBulletPrefab, inBulletPos, Quaternion.identity);
+        eBullet2.GetComponent<Renderer>().material.color = this.E_BULLET_STRIGHT_COLOR;
+        eBullet2.GetComponent<EBulletController>().EBulletShoot(
+            inBulletPos,
+            EBulletController.EBulletDirectionX.left,
+            EBulletController.EBulletDirectionY.left);
+
+        GameObject eBullet3 = Instantiate(this.eBulletPrefab, inBulletPos, Quaternion.identity) as GameObject;
+        eBullet3.GetComponent<Renderer>().material.color = this.E_BULLET_STRIGHT_COLOR;
+        eBullet3.GetComponent<EBulletController>().EBulletShoot(
+            inBulletPos,
+            EBulletController.EBulletDirectionX.left,
+            EBulletController.EBulletDirectionY.left);
 
     }
 
@@ -126,10 +138,9 @@ public class EBulletGenerator : MonoBehaviour
         }
         Vector2 playerPos = GameObject.Find("Player").transform.position;
 
-        //レベル判定
-        int enemyLevelBorder = (int)EnemyLevel.lv3;
+        //レベル7以上で弾速UP
         int eBulletSpeed = (int)EBulletController.EBulletSpeed.low;
-        if (inEnemyLevel >= enemyLevelBorder) {
+        if(inEnemyLevel >= (int)EnemyLevel.lv7) {
 
             //弾速アップ
             eBulletSpeed = (int)EBulletController.EBulletSpeed.hight;
@@ -152,10 +163,9 @@ public class EBulletGenerator : MonoBehaviour
         const float baseAngle = 180.0f;
 
         //敵レベルを基に、扇状弾の球数を決める
-        int enemyLevelBorder = (int)EnemyLevel.lv2;
         int bulletCount = 3;
-        if(inEnemyLevel >= enemyLevelBorder) {
-            //敵レベルが上がっていたら球数を増やす
+        if(inEnemyLevel >= (int)EnemyLevel.lv5) {
+            //敵レベルが5以上の場合、球数を増やす
             bulletCount = 5;
         } 
 
@@ -191,34 +201,39 @@ public class EBulletGenerator : MonoBehaviour
     }
 
     //ランダム弾を生成する
-    public void EBulletRandom(Vector2 inBulletPos, int inEnemyLevel) {
+    //public void EBulletRandom(Vector2 inBulletPos, int inEnemyLevel) {
 
-        //発射位置は敵の現在位置とする
-        Vector2 shootPos = this.gameObject.transform.position;
+    //    //発射位置は敵の現在位置とする
+    //    Vector2 shootPos = this.gameObject.transform.position;
 
-        //0～360度の範囲でランダムな角度（度数法）を決定する
-        float randomAngleDeg = Random.Range(0f, 360f);
+    //    //0～360度の範囲でランダムな角度（度数法）を決定する
+    //    float randomAngleDeg = Random.Range(0f, 360f);
 
-        //度数法の角度をラジアンに変換する（Mathf.Cos/Sinはラジアンを使うため）
-        float randomAngleRad = randomAngleDeg * Mathf.Deg2Rad;
+    //    //度数法の角度をラジアンに変換する（Mathf.Cos/Sinはラジアンを使うため）
+    //    float randomAngleRad = randomAngleDeg * Mathf.Deg2Rad;
 
-        //ランダムな角度から発射方向ベクトル（X, Y）を求める
-        Vector2 randomDirection = new Vector2(Mathf.Cos(randomAngleRad), Mathf.Sin(randomAngleRad));
+    //    //ランダムな角度から発射方向ベクトル（X, Y）を求める
+    //    Vector2 randomDirection = new Vector2(Mathf.Cos(randomAngleRad), Mathf.Sin(randomAngleRad));
 
-        //敵弾のプレハブを、発射位置・回転なしで生成する
-        GameObject eBullet = Instantiate(this.eBulletPrefab, shootPos, Quaternion.identity);
+    //    //敵弾のプレハブを、発射位置・回転なしで生成する
+    //    GameObject eBullet = Instantiate(this.eBulletPrefab, shootPos, Quaternion.identity);
 
-        //EBulletController.cs に既にある「任意方向へ発射する」メソッド（扇状弾用に用意されたもの）を
-        //そのまま再利用し、ランダムな方向へ弾を撃ち出す。EBulletController.cs 自体は変更していない。
-        EBulletController eBulletController = eBullet.GetComponent<EBulletController>();
-        if(eBulletController != null) {
-            eBulletController.EBulletShoot(randomDirection);
-        }
+    //    //EBulletController.cs に既にある「任意方向へ発射する」メソッド（扇状弾用に用意されたもの）を
+    //    //そのまま再利用し、ランダムな方向へ弾を撃ち出す。EBulletController.cs 自体は変更していない。
+    //    EBulletController eBulletController = eBullet.GetComponent<EBulletController>();
+    //    if(eBulletController != null) {
+    //        eBulletController.EBulletShoot(randomDirection);
+    //    }
 
-    }
+    //}
 
     //敵弾（直進 逆方向）
     private void EBulletStraightOpposite(Vector2 inBulletPos, int inEnemyLevel) {
+
+        //レベル3までは弾を撃たない
+        if(inEnemyLevel <= (int)EnemyLevel.lv3) {
+            return;
+        }
 
         //正面
         GameObject eBullet1 = Instantiate(eBulletPrefab, inBulletPos, Quaternion.identity) as GameObject;
@@ -228,26 +243,26 @@ public class EBulletGenerator : MonoBehaviour
             EBulletController.EBulletDirectionX.right,
             EBulletController.EBulletDirectionY.left);
 
-        //レベル判定
-        int enemyLevelBorder = (int)EnemyLevel.lv2;
-        if(inEnemyLevel >= enemyLevelBorder) {
-
-            //上下
-            GameObject eBullet2 = Instantiate(this.eBulletPrefab, inBulletPos, Quaternion.identity);
-            eBullet2.GetComponent<Renderer>().material.color = this.E_BULLET_STRIGHT_COLOR;
-            eBullet2.GetComponent<EBulletController>().EBulletShoot(
-                inBulletPos,
-                EBulletController.EBulletDirectionX.right,
-                EBulletController.EBulletDirectionY.left);
-
-            GameObject eBullet3 = Instantiate(this.eBulletPrefab, inBulletPos, Quaternion.identity);
-            eBullet3.GetComponent<Renderer>().material.color = this.E_BULLET_STRIGHT_COLOR;
-            eBullet3.GetComponent<EBulletController>().EBulletShoot(
-                inBulletPos,
-                EBulletController.EBulletDirectionX.right,
-                EBulletController.EBulletDirectionY.left);
-
+        //レベル10以上で3Way弾になる
+        if(inEnemyLevel <= (int)EnemyLevel.lv10) {
+            return;
         }
+
+        //上下
+        GameObject eBullet2 = Instantiate(this.eBulletPrefab, inBulletPos, Quaternion.identity);
+        eBullet2.GetComponent<Renderer>().material.color = this.E_BULLET_STRIGHT_COLOR;
+        eBullet2.GetComponent<EBulletController>().EBulletShoot(
+            inBulletPos,
+            EBulletController.EBulletDirectionX.right,
+            EBulletController.EBulletDirectionY.left);
+
+        GameObject eBullet3 = Instantiate(this.eBulletPrefab, inBulletPos, Quaternion.identity);
+        eBullet3.GetComponent<Renderer>().material.color = this.E_BULLET_STRIGHT_COLOR;
+        eBullet3.GetComponent<EBulletController>().EBulletShoot(
+            inBulletPos,
+            EBulletController.EBulletDirectionX.right,
+            EBulletController.EBulletDirectionY.left);
+
 
     }
 }

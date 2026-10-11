@@ -1,16 +1,14 @@
 ﻿using UnityEngine;
 
+//敵タイプT2：画面右から出現し、一定距離を直進後、その場にとどまって誘導弾を発射し続ける敵。
 public class EnemyT2Controller : MonoBehaviour {
 
     //点数
-    private const int ENEMY_SCORE = 1000;
+    private const int ENEMY_SCORE = 200;
 
     //敵弾発射の間隔
     private const float SHOOT_INTERVAL = 2.5f;
     private float shootTime;
-
-    //敵のレベル設定
-    private const int ENEMY_LEVEL = 6;
 
     //生成から移動開始するまでの間隔
     private const float MOVE_INTERVAL = 0.0f;
@@ -51,6 +49,9 @@ public class EnemyT2Controller : MonoBehaviour {
     //敵の死亡時のSE
     private GameObject destroySE;
 
+    //GameDirector
+    private GameObject gameDirector;
+
     // Use this for initialization
     void Start() {
 
@@ -58,6 +59,9 @@ public class EnemyT2Controller : MonoBehaviour {
 
         //敵死亡時のSEオブジェクト取得
         this.destroySE = GameObject.Find("SEDirector");
+
+        //Directorと連携
+        this.gameDirector = GameObject.Find("GameDirector");
 
         //敵の進行方向を設定
         this.moveDirection = MOVE_DIRECTION;
@@ -92,7 +96,8 @@ public class EnemyT2Controller : MonoBehaviour {
         if(this.shootTime >= SHOOT_INTERVAL) {
 
             //敵の位置を基に、敵弾を発射
-            this.ShootBullet();
+            //敵レベルはWave数とイコール
+            this.ShootBullet(this.gameDirector.GetComponent<GameDirector>().WaveNum);
 
             //発射間隔をリセット
             this.shootTime = 0f;
@@ -140,13 +145,13 @@ public class EnemyT2Controller : MonoBehaviour {
     }
 
     //敵弾を発射
-    private void ShootBullet() {
+    private void ShootBullet(int inEnemyLevel) {
 
         //敵の位置を基に、敵弾を発射
         Vector2 enemyPos = this.gameObject.transform.position;
         this.eBulletObj.GetComponent<EBulletGenerator>().EBulletGenerate(
             enemyPos
-            , ENEMY_LEVEL
+            , inEnemyLevel
             , EBulletGenerator.EBulletType.homing);
 
     }
@@ -183,12 +188,9 @@ public class EnemyT2Controller : MonoBehaviour {
         //自弾に当たったら消滅
         if(collision.gameObject.name == "P_Bullet_Prefab(Clone)") {
 
-            //Directorと連携
-            GameObject gameDirectorObj = GameObject.Find("GameDirector");
-
             //倒されたこと、加算する点数をDirectorに伝える
-            gameDirectorObj.GetComponent<GameDirector>().EnemyDestroyNumPlus();
-            gameDirectorObj.GetComponent<GameDirector>().ScorePlus(ENEMY_SCORE);
+            this.gameDirector.GetComponent<GameDirector>().EnemyDestroyNumPlus();
+            this.gameDirector.GetComponent<GameDirector>().ScorePlus(ENEMY_SCORE);
 
             //自分自身を消す
             Destroy(gameObject);

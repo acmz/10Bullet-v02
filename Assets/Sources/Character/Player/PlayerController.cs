@@ -3,6 +3,9 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour {
 
+    //＊＊＊無敵モード＊＊＊
+    private const bool PLAYER_IS_INVINCIBLE = true;
+
     //自機のオブジェクト
     Rigidbody2D playerBody;
 
@@ -79,6 +82,11 @@ public class PlayerController : MonoBehaviour {
 
     //敵弾に当たったら、自分自身を消す
     private void OnTriggerEnter2D(Collider2D collision) {
+
+        //無敵モード判定
+        if(PLAYER_IS_INVINCIBLE) {
+            return;
+        }
 
         //敵弾に当たったら消滅
         if(collision.gameObject.name == "E_Bullet_Prefab(Clone)") {
