@@ -50,6 +50,9 @@ public class GameDirector : MonoBehaviour {
     //ゲームオーバーコントロールフラグ
     private bool isGameOver = false;
 
+    //ゲームクリアコントロールフラグ
+    private bool isClear = false;
+
     //Wave数表示
     private GameObject waveUI;
     private const int START_WAVE_NUM = 0;
@@ -77,10 +80,6 @@ public class GameDirector : MonoBehaviour {
 
     //Wave終了時のウェイトタイム
     private const float WAVE_END_WAIT_TIME = 3.0f;
-
-    //ゲームオーバー表示時間
-    //private const float GAMEOVER_WAIT_TIME = 5.0f;
-    //private float gameOverWaitTime = 0f;
 
     // Use this for initialization
     IEnumerator Start() {
@@ -117,24 +116,6 @@ public class GameDirector : MonoBehaviour {
 
         while(true) {
 
-            //キーボードの状態取得
-            Keyboard keyboard = Keyboard.current;
-
-            //キーボードが接続されていない場合、何もしない
-            if(keyboard == null) {
-                continue;
-            }
-
-            //ゲームオーバー中にESCキーが押されたら、シーンをリセットする
-            if(this.isGameOver && keyboard.escapeKey.wasPressedThisFrame) {
-                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-            }
-
-            //ゲームオーバー中なら何もしない
-            if(this.isGameOver) {
-                continue;
-            }
-
             //自機が消えたらゲームオーバー
             if(GameObject.Find("Player") == null && !this.isGameOver) {
 
@@ -146,7 +127,22 @@ public class GameDirector : MonoBehaviour {
                 UnityroomApiClient.Instance.SendScore(1, this.score, ScoreboardWriteMode.HighScoreDesc);
 
                 this.isGameOver = true;
-                continue;
+                break;
+
+            }
+
+            //Wave10まで到達したらクリア
+            if(this.waveNum == 10 && this.timeLeft <= 0f) {
+
+                //Debug.Log("GameClear!");
+
+                yield return new WaitForSeconds(3f);
+
+                //スコア表示
+                UnityroomApiClient.Instance.SendScore(1, this.score, ScoreboardWriteMode.HighScoreDesc);
+
+                this.isClear = true;
+                break;
 
             }
 
@@ -172,10 +168,28 @@ public class GameDirector : MonoBehaviour {
     // Update is called once per frame
     void Update() {
 
+        //キーボードの状態取得
+        Keyboard keyboard = Keyboard.current;
+
+        //キーボードが接続されていない場合、何もしない
+        if(keyboard == null) {
+            return;
+        }
+
+        //ゲームオーバー中またはクリア後にESCキーが押されたら、シーンをリセットする
+        if((this.isGameOver || this.isClear)
+            && keyboard.escapeKey.wasPressedThisFrame) {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+
     }
 
     //プレイヤーステータス初期化（コルーチン）
     private IEnumerator InitPlayerStatus(float inTime) {
+
+        //コンプリート表示を消す
+        this.waveUI.SetActive(false);
+        this.completeUI.SetActive(false);
 
         //Wave数設定
         this.NextWave();
@@ -220,8 +234,6 @@ public class GameDirector : MonoBehaviour {
         WaitForSeconds wait = new WaitForSeconds(inTime);
         yield return wait;
 
-        //this.waveUI.SetActive(false);
-        this.completeUI.SetActive(false);
         this.isWaveInit = true;
 
     }
