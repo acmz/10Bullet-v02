@@ -94,6 +94,8 @@ public class EBulletGenerator : MonoBehaviour
     //敵弾（直進）
     private void EBulletStraight(Vector2 inBulletPos, int inEnemyLevel) {
 
+        //Debug.Log("Enemy Level = " + inEnemyLevel);
+
         //レベル3までは弾を撃たない
         if(inEnemyLevel <= (int)EnemyLevel.lv3) {
             return;
@@ -108,7 +110,7 @@ public class EBulletGenerator : MonoBehaviour
             EBulletController.EBulletDirectionY.left);
 
         //レベル9以上で3Way弾になる
-        if(inEnemyLevel <= (int)EnemyLevel.lv9) {
+        if(inEnemyLevel <= (int)EnemyLevel.lv8) {
             return;
         }
 
@@ -118,14 +120,14 @@ public class EBulletGenerator : MonoBehaviour
         eBullet2.GetComponent<EBulletController>().EBulletShoot(
             inBulletPos,
             EBulletController.EBulletDirectionX.left,
-            EBulletController.EBulletDirectionY.left);
+            EBulletController.EBulletDirectionY.up);
 
         GameObject eBullet3 = Instantiate(this.eBulletPrefab, inBulletPos, Quaternion.identity) as GameObject;
         eBullet3.GetComponent<Renderer>().material.color = this.E_BULLET_STRIGHT_COLOR;
         eBullet3.GetComponent<EBulletController>().EBulletShoot(
             inBulletPos,
             EBulletController.EBulletDirectionX.left,
-            EBulletController.EBulletDirectionY.left);
+            EBulletController.EBulletDirectionY.down);
 
     }
 

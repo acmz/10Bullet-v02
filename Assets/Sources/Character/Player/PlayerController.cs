@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour {
 
     //＊＊＊無敵モード＊＊＊
-    private const bool PLAYER_IS_INVINCIBLE = true;
+    private const bool PLAYER_IS_INVINCIBLE = false;
 
     //自機のオブジェクト
     Rigidbody2D playerBody;

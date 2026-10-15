@@ -78,6 +78,9 @@ public class GameDirector : MonoBehaviour {
         }
     }
 
+    //Wave中初期化時のウェイトタイム
+    private const float WAVE_INIT_WAIT_TIME = 0.5f;
+
     //Wave終了時のウェイトタイム
     private const float WAVE_END_WAIT_TIME = 3.0f;
 
@@ -136,10 +139,13 @@ public class GameDirector : MonoBehaviour {
 
                 //Debug.Log("GameClear!");
 
-                yield return new WaitForSeconds(3f);
+                //yield return new WaitForSeconds(3f);
 
                 //スコア表示
                 UnityroomApiClient.Instance.SendScore(1, this.score, ScoreboardWriteMode.HighScoreDesc);
+
+                //リターンメッセージ表示
+                this.returnTitleUI.SetActive(true);
 
                 this.isClear = true;
                 break;
@@ -149,7 +155,10 @@ public class GameDirector : MonoBehaviour {
             //Wave開始前
             //残弾数と残り時間のリセット、Wave数の設定
             if(this.isWaveInit) {
-                yield return this.InitPlayerStatus(0.5f);
+
+                yield return this.InitPlayerStatus(WAVE_INIT_WAIT_TIME);
+                this.isWaveInit = false;
+
             }
 
             //Wave開始後
@@ -158,7 +167,10 @@ public class GameDirector : MonoBehaviour {
 
             //残り時間が0になったら、全ての敵と敵弾を削除し、次のWaveへ。
             if(this.timeLeft <= 0f) {
+
                 yield return this.WaveEnd(WAVE_END_WAIT_TIME);
+                this.isWaveInit = true;
+
             }
 
         }
@@ -216,7 +228,6 @@ public class GameDirector : MonoBehaviour {
         //Wave開始
         this.waveUI.SetActive(false);
         this.readyUI.SetActive(false);
-        this.isWaveInit = false;
 
     }
 
@@ -233,8 +244,6 @@ public class GameDirector : MonoBehaviour {
 
         WaitForSeconds wait = new WaitForSeconds(inTime);
         yield return wait;
-
-        this.isWaveInit = true;
 
     }
 
